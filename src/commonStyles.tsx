@@ -8,6 +8,14 @@ export const commonStyles = StyleSheet.create({
         padding: 10,
     },
     headerText: {
+        fontSize: 30,
+        color: 'darkgreen',
+        fontFamily: 'Bona Nova',
+    },
+    stackHeaderView: {
+        backgroundColor: 'lightgreen',
+    },
+    stackHeaderText: {
         fontSize: 24,
         color: 'darkgreen',
         fontFamily: 'Bona Nova',
