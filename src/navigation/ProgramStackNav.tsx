@@ -9,7 +9,7 @@ function ProgramStackNav() : React.JSX.Element {
     return (
         <Stack.Navigator>
             <Stack.Screen
-                name="Program"
+                name="View Program"
                 component={ProgramPage}
                 options={{
                     headerTitleStyle: commonStyles.stackHeaderText,

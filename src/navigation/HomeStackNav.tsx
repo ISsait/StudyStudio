@@ -9,7 +9,7 @@ function HomeStackNav() : React.JSX.Element {
     return (
         <Stack.Navigator>
             <Stack.Screen
-                name="Home"
+                name="Home Page"
                 component={HomePage}
                 options={{
                     headerTitleStyle: commonStyles.stackHeaderText,

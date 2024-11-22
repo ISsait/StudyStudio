@@ -9,7 +9,7 @@ function CourseStackNav() : React.JSX.Element {
     return (
         <Stack.Navigator>
             <Stack.Screen
-                name="Course"
+                name="View Courses"
                 component={CoursePage}
                 options={{
                     headerTitleStyle: commonStyles.stackHeaderText,

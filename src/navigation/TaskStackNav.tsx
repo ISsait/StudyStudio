@@ -9,7 +9,7 @@ function TaskStackNav() : React.JSX.Element {
     return (
         <Stack.Navigator>
             <Stack.Screen
-                name="Task"
+                name="View Tasks"
                 component={TaskPage}
                 options={{
                     headerTitleStyle: commonStyles.stackHeaderText,
