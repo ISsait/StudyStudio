@@ -20,6 +20,15 @@ export type ProgramType = {
     programDescription: string,
 };
 
+// Semester type definition
+export type SemesterType = {
+    id: number,
+    semesterName: string,
+    startDate: string,
+    endDate: string,
+    courses: CourseType[],
+};
+
 // Course type definition
 export type CourseType = {
     id: number,
@@ -31,6 +40,7 @@ export type CourseType = {
     startDate: string,
     endDate: string,
     notes: string,
+    projects: ProjectType[],
 };
 
 // Project type definition
@@ -43,6 +53,7 @@ export type ProjectType = {
     completed: boolean,
     groupName: boolean,
     notes: string,
+    tasks: TaskType[],
 };
 
 // Task type definition
@@ -60,5 +71,6 @@ export type TaskObject = {
     task: TaskType,
     course: CourseType,
     project: ProjectType,
+    semester: SemesterType,
     program: ProgramType,
 };
