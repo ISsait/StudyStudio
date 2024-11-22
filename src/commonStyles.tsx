@@ -50,10 +50,6 @@ export const commonStyles = StyleSheet.create({
         color: 'black',
         justifyContent: 'space-between',
     },
-    sectionContainer: {
-        marginTop: 32,
-        paddingHorizontal: 24,
-    },
 
     // Components
     fab: {
@@ -68,5 +64,11 @@ export const commonStyles = StyleSheet.create({
         padding: 10,
         margin: 10,
         borderWidth: 1,
+    },
+    notificationCard: {
+        flexDirection: 'row',
+        padding: 10,
+        margin: 10,
+        borderRadius: 5,
     },
 });

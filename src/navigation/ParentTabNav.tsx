@@ -5,8 +5,10 @@ import HomeStackNav from './HomeStackNav';
 import ProgramStackNav from './ProgramStackNav';
 import CourseStackNav from './CourseStackNav';
 import TaskStackNav from './TaskStackNav';
+import mockData from '../data/mockData.json';
 
 const Tab = createMaterialTopTabNavigator();
+const data = mockData;
 
 function ParentTabNav() : React.JSX.Element {
     return (

@@ -11,3 +11,54 @@ export const courseColors =
         lavender: '#E6E6FA',
     };
 
+// Program type definition
+export type ProgramType = {
+    id: number,
+    schoolName: string,
+    programName: string,
+    programLength: number,
+    programDescription: string,
+};
+
+// Course type definition
+export type CourseType = {
+    id: number,
+    courseName: string,
+    courseCode: string,
+    instructor: string,
+    color: string,
+    semester: string,
+    startDate: string,
+    endDate: string,
+    notes: string,
+};
+
+// Project type definition
+export type ProjectType = {
+    id: number,
+    projectName: string,
+    estimatedHrs: number,
+    startDate: string,
+    dueDate: string,
+    completed: boolean,
+    groupName: boolean,
+    notes: string,
+};
+
+// Task type definition
+export type TaskType = {
+    id: number,
+    taskName: string,
+    estimatedHrs: number,
+    dueDate: string,
+    completed: boolean,
+    notes: string,
+};
+
+// Task object type definition
+export type TaskObject = {
+    task: TaskType,
+    course: CourseType,
+    project: ProjectType,
+    program: ProgramType,
+};
