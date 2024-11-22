@@ -12,8 +12,9 @@ function CourseStackNav() : React.JSX.Element {
                 name="Course"
                 component={CoursePage}
                 options={{
-                    headerStyle: commonStyles.stackHeaderView,
                     headerTitleStyle: commonStyles.stackHeaderText,
+                    headerTransparent: true,
+                    contentStyle: commonStyles.stackContent,
                 }}
             />
         </Stack.Navigator>

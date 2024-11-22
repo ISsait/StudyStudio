@@ -12,8 +12,9 @@ function HomeStackNav() : React.JSX.Element {
                 name="Home"
                 component={HomePage}
                 options={{
-                    headerStyle: commonStyles.stackHeaderView,
                     headerTitleStyle: commonStyles.stackHeaderText,
+                    headerTransparent: true,
+                    contentStyle: commonStyles.stackContent,
                 }}
             />
         </Stack.Navigator>

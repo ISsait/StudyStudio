@@ -12,8 +12,9 @@ function TaskStackNav() : React.JSX.Element {
                 name="Task"
                 component={TaskPage}
                 options={{
-                    headerStyle: commonStyles.stackHeaderView,
                     headerTitleStyle: commonStyles.stackHeaderText,
+                    headerTransparent: true,
+                    contentStyle: commonStyles.stackContent,
                 }}
             />
         </Stack.Navigator>

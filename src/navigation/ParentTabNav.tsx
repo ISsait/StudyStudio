@@ -12,10 +12,10 @@ function ParentTabNav() : React.JSX.Element {
     return (
         <NavigationContainer>
             <Tab.Navigator>
-              <Tab.Screen name="HomeStack" component={HomeStackNav} />
-              <Tab.Screen name="ProgramStack" component={ProgramStackNav} />
-              <Tab.Screen name="CourseStack" component={CourseStackNav} />
-              <Tab.Screen name="TaskStack" component={TaskStackNav} />
+              <Tab.Screen name="Home" component={HomeStackNav} />
+              <Tab.Screen name="Programs" component={ProgramStackNav} />
+              <Tab.Screen name="Courses" component={CourseStackNav} />
+              <Tab.Screen name="Tasks" component={TaskStackNav} />
             </Tab.Navigator>
         </NavigationContainer>
     );

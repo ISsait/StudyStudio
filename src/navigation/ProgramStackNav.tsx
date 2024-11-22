@@ -12,8 +12,9 @@ function ProgramStackNav() : React.JSX.Element {
                 name="Program"
                 component={ProgramPage}
                 options={{
-                    headerStyle: commonStyles.stackHeaderView,
                     headerTitleStyle: commonStyles.stackHeaderText,
+                    headerTransparent: true,
+                    contentStyle: commonStyles.stackContent,
                 }}
             />
         </Stack.Navigator>
