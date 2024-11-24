@@ -45,6 +45,14 @@ export class Program extends BaseEntity {
         this.programLength = programLength;
         this.programDescription = programDescription;
     }
+
+    // Update program details
+    updateProgram(schoolName: string, programName: string, programLength: number, programDescription: string) {
+        this.schoolName = schoolName;
+        this.programName = programName;
+        this.programLength = programLength;
+        this.programDescription = programDescription;
+    }
 }
 
 // Default program object for initialization of program state
@@ -67,6 +75,38 @@ export class SemesterType extends BaseEntity {
         this.endDate = endDate;
         this.courseIds = courseIds;
         this.programID = programID;
+    }
+
+    // Add course to semester
+    addCourse(courseID: string) {
+        this.courseIds.push(courseID);
+    }
+
+    // Remove course from semester
+    removeCourse(courseID: string) {
+        this.courseIds = this.courseIds.filter(id => id !== courseID); // Non-mutating filter
+    }
+
+    // Assign semester to program
+    assignProgram(programID: string) {
+        this.programID = programID; // Assign program ID to semester
+    }
+
+    // Unassign semester from program
+    unassignProgram() {
+        this.programID = ''; // Unassign program ID from semester
+    }
+
+    // Update semester details
+    updateSemester(semesterName: string, startDate: string, endDate: string) {
+        this.semesterName = semesterName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    // Get semester duration
+    getDuration() {
+        return this.startDate + ' - ' + this.endDate;
     }
 }
 
@@ -99,6 +139,37 @@ export class CourseType extends BaseEntity {
         this.projectIds = projectIds;
         this.semesterID = semesterID;
     }
+
+    // Add project to course
+    addProject(projectID: string) {
+        this.projectIds.push(projectID);
+    }
+
+    // Remove project from course
+    removeProject(projectID: string) {
+        this.projectIds = this.projectIds.filter(id => id !== projectID); // Non-mutating filter
+    }
+
+    // Assign course to semester
+    assignSemester(semesterID: string) {
+        this.semesterID = semesterID; // Assign semester ID to course
+    }
+
+    // Unassign course from semester
+    unassignSemester() {
+        this.semesterID = ''; // Unassign semester ID from course
+    }
+
+    // Update course details
+    updateCourse(courseName: string, courseCode: string, instructor: string, color: CourseColors, startDate: string, endDate: string, notes: string) {
+        this.courseName = courseName;
+        this.courseCode = courseCode;
+        this.instructor = instructor;
+        this.color = color;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.notes = notes;
+    }
 }
 
 // Default course object for initialization of course state
@@ -130,6 +201,46 @@ export class ProjectType extends BaseEntity {
         this.taskIds = taskIds;
         this.courseID = courseID;
     }
+
+    // Add task to project
+    addTask(taskID: string) {
+        this.taskIds.push(taskID);
+    }
+
+    // Remove task from project
+    removeTask(taskID: string) {
+        this.taskIds = this.taskIds.filter(id => id !== taskID); // Non-mutating filter
+    }
+
+    // Mark project as completed
+    markCompleted() {
+        this.completed = true;
+    }
+
+    // Mark project as incomplete
+    markIncomplete() {
+        this.completed = false;
+    }
+
+    // Assign project to course
+    assignCourse(courseID: string) {
+        this.courseID = courseID; // Assign course ID to project
+    }
+
+    // Unassign project from course
+    unassignCourse() {
+        this.courseID = ''; // Unassign course ID from project
+    }
+
+    // Update project details
+    updateProject(projectName: string, estimatedHrs: number, startDate: string, endDate: string, groupName: boolean, notes: string) {
+        this.projectName = projectName;
+        this.estimatedHrs = estimatedHrs;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.groupName = groupName;
+        this.notes = notes;
+    }
 }
 
 // Default project object for initialization of project state
@@ -154,6 +265,34 @@ export class TaskType extends BaseEntity {
         this.completed = completed;
         this.notes = notes;
         this.projectID = projectID;
+    }
+
+    // Mark task as completed
+    markCompleted() {
+        this.completed = true;
+    }
+
+    // Mark task as incomplete
+    markIncomplete() {
+        this.completed = false;
+    }
+
+    // Assign task to project
+    assignProject(projectID: string) {
+        this.projectID = projectID; // Assign project ID to task
+    }
+
+    // Unassign task from project
+    unassignProject() {
+        this.projectID = ''; // Unassign project ID from task
+    }
+
+    // Update task details
+    updateTask(taskName: string, estimatedHrs: number, endDate: string, notes: string) {
+        this.taskName = taskName;
+        this.estimatedHrs = estimatedHrs;
+        this.endDate = endDate;
+        this.notes = notes;
     }
 }
 
