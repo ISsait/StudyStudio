@@ -62,7 +62,7 @@ export const defaultProgram: Program = new Program('', '', 0, '');
 * SemesterType: Semester object type definition
 */
 // Semester type definition
-export class SemesterType extends BaseEntity {
+export class Semester extends BaseEntity {
     semesterName: string;
     startDate: string;
     endDate: string;
@@ -111,13 +111,13 @@ export class SemesterType extends BaseEntity {
 }
 
 // Default semester object for initialization of semester state
-export const defaultSemester: SemesterType = new SemesterType('', '', '', [], '');
+export const defaultSemester: Semester = new Semester('', '', '', [], '');
 
 /*
 * CourseType: Course object type definition
 */
 // Course type definition
-export class CourseType extends BaseEntity {
+export class Course extends BaseEntity {
     courseName: string;
     courseCode: string;
     instructor: string;
@@ -173,23 +173,23 @@ export class CourseType extends BaseEntity {
 }
 
 // Default course object for initialization of course state
-export const defaultCourse: CourseType = new CourseType('', '', '', CourseColors.pink, '', '', '', [], '');
+export const defaultCourse: Course = new Course('', '', '', CourseColors.pink, '', '', '', [], '');
 
 /*
 * ProjectType: Project object type definition
 */
 // Project type definition
-export class ProjectType extends BaseEntity {
+export class Project extends BaseEntity {
     projectName: string;
     estimatedHrs: number;
     startDate: string;
     endDate: string;
     completed: boolean;
-    groupName: boolean;
+    groupName: string;
     notes: string;
     taskIds: string[];
     courseID: string;
-    constructor(projectName: string, estimatedHrs: number, startDate: string, endDate: string, completed: boolean, groupName: boolean, notes: string, taskIds: string[], courseID: string) {
+    constructor(projectName: string, estimatedHrs: number, startDate: string, endDate: string, completed: boolean, groupName: string, notes: string, taskIds: string[], courseID: string) {
         super();
         this.projectName = projectName;
         this.estimatedHrs = estimatedHrs;
@@ -233,7 +233,7 @@ export class ProjectType extends BaseEntity {
     }
 
     // Update project details
-    updateProject(projectName: string, estimatedHrs: number, startDate: string, endDate: string, groupName: boolean, notes: string) {
+    updateProject(projectName: string, estimatedHrs: number, startDate: string, endDate: string, groupName: string, notes: string) {
         this.projectName = projectName;
         this.estimatedHrs = estimatedHrs;
         this.startDate = startDate;
@@ -244,13 +244,13 @@ export class ProjectType extends BaseEntity {
 }
 
 // Default project object for initialization of project state
-export const defaultProject: ProjectType = new ProjectType('', 0, '', '', false, false, '', [], '');
+export const defaultProject: Project = new Project('', 0, '', '', false, '', '', [], '');
 
 /*
 * TaskType: Task object type definition
 */
 // Task type definition
-export class TaskType extends BaseEntity {
+export class Task extends BaseEntity {
     taskName: string;
     estimatedHrs: number;
     endDate: string;
@@ -297,7 +297,7 @@ export class TaskType extends BaseEntity {
 }
 
 // Default task object for initialization of task state
-export const defaultTask: TaskType = new TaskType('', 0, '', false, '', '');
+export const defaultTask: Task = new Task('', 0, '', false, '', '');
 
 
 /*
