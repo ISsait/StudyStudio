@@ -61,6 +61,7 @@ export const TEST_DATA_CLASSES : Array<classes> = [
 
 export interface projects {
     classID: string,
+    className: string,
     projectID: string,
     projectName: string,
     estHours: number,
@@ -73,6 +74,7 @@ export interface projects {
 
 export const defaultProjectEntry : projects = {
     classID: "",
+    className: "",
     projectID: "",
     projectName: "",
     estHours: 0,
@@ -86,6 +88,7 @@ export const defaultProjectEntry : projects = {
 export const TEST_DATA_PROJECTS : Array<projects> = [
     {
         classID: "1",
+        className: "Object Oriented Programming 3",
         projectID: "1",
         projectName: "OOP final",
         estHours: 20,
@@ -97,6 +100,7 @@ export const TEST_DATA_PROJECTS : Array<projects> = [
     },
     {
         classID: "2",
+        className: "Web Dev 2",
         projectID: "2",
         projectName: "Web Dev final",
         estHours: 25,
@@ -108,6 +112,7 @@ export const TEST_DATA_PROJECTS : Array<projects> = [
     },
     {
         classID: "3",
+        className: "Mobile Development",
         projectID: "3",
         projectName: "Mobile Dev final",
         estHours: 20,
@@ -121,7 +126,9 @@ export const TEST_DATA_PROJECTS : Array<projects> = [
 
 export interface tasks {
     classID: string,
+    className: string,
     projectID: string,
+    projectName: string,
     taskID: string,
     taskName: string,
     estHours: number,
@@ -132,7 +139,9 @@ export interface tasks {
 
 export const defaultTaskEntry : tasks = {
     classID: "",
+    className: "",
     projectID: "",
+    projectName: "",
     taskID: "",
     taskName: "",
     estHours: 0,
@@ -144,7 +153,9 @@ export const defaultTaskEntry : tasks = {
 export const TEST_DATA_TASKS : Array<tasks> = [
     {
         classID: "1",
+        className: "Object Oriented Programming 3",
         projectID: "1",
+        projectName: "OOP final",
         taskID: "1",
         taskName: "Implementing DLL",
         estHours: 2,
@@ -154,7 +165,9 @@ export const TEST_DATA_TASKS : Array<tasks> = [
     },
     {
         classID: "2",
+        className: "Web Dev 2",
         projectID: "2",
+        projectName: "Web Dev Final",
         taskID: "2",
         taskName: "Creating landing page",
         estHours: 4,
@@ -164,7 +177,9 @@ export const TEST_DATA_TASKS : Array<tasks> = [
     },
     {
         classID: "3",
+        className: "Mobile Dev",
         projectID: "3",
+        projectName: "Mobile Dev final",
         taskID: "3",
         taskName: "Creating screens",
         estHours: 6,
