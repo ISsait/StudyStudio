@@ -7,19 +7,18 @@ import ProgramStackNav from './ProgramStackNav';
 import CourseStackNav from './CourseStackNav';
 import TaskStackNav from './TaskStackNav';
 
-import {
-  Program,
-  Semester,
-  Course,
-  Project,
-  Task,
-} from '../utility';
-import mockData from '../data/mockData';
-
+import { mockData } from '../data/mockData';
 
 const Tab = createMaterialTopTabNavigator();
 
+const programs = mockData.programs;
+const semesters = mockData.semesters;
+const courses = mockData.courses;
+const projects = mockData.projects;
+const tasks = mockData.tasks;
+
 function ParentTabNav() : React.JSX.Element {
+
     return (
         <NavigationContainer>
             <Tab.Navigator>

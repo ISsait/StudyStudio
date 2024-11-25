@@ -1,4 +1,6 @@
-import {ObjectId} from 'bson';
+import Realm from 'realm';
+// const { ObjectId } = Realm.BSON;
+
 
 // List of colors for courses
 export enum CourseColors {
@@ -23,12 +25,12 @@ export enum CourseColors {
 */
 
 class BaseEntity {
-    id: ObjectId;
-    constructor(id?: ObjectId) {
-        if (id && !ObjectId.isValid(id)) {
+    _id: Realm.BSON.ObjectId;
+    constructor(_id?: Realm.BSON.ObjectId) {
+        if (_id && !Realm.BSON.ObjectId.isValid(_id)) {
             throw new Error('Invalid ID');
         }
-        this.id = id ?? new ObjectId();
+        this._id = _id ?? new Realm.BSON.ObjectId();
     }
 }
 
@@ -41,8 +43,8 @@ export class Program extends BaseEntity {
     programName: string = '';
     programLength: number = 0;
     programDescription: string = '';
-    constructor(schoolName: string, programName: string, programLength: number, programDescription: string, id?: ObjectId) {
-        super(id);
+    constructor(schoolName: string, programName: string, programLength: number, programDescription: string, _id?: Realm.BSON.ObjectId) {
+        super(_id);
         this.schoolName = schoolName;
         this.programName = programName;
         this.programLength = programLength;
@@ -79,35 +81,41 @@ export class Semester extends BaseEntity {
     semesterName: string = '';
     startDate: Date = new Date();
     endDate: Date = new Date();
-    courseIds: ObjectId[] = [];
-    programID: ObjectId | null = null;
-    constructor(semesterName: string, startDate: Date, endDate: Date, courseIds: ObjectId[], programID?: ObjectId, id?: ObjectId) {
-        super(id);
+    courseIds: Realm.BSON.ObjectId[] | null = null;
+    programId: Realm.BSON.ObjectId | null = null;
+    constructor(semesterName: string, startDate: Date, endDate: Date, courseIds: Realm.BSON.ObjectId[], programId?: Realm.BSON.ObjectId, _id?: Realm.BSON.ObjectId) {
+        super(_id);
         this.semesterName = semesterName;
         this.startDate = startDate;
         this.endDate = endDate;
         this.courseIds = courseIds ?? [];
-        this.programID = programID ?? null;
+        this.programId = programId ?? null;
     }
 
     // Add course to semester
-    addCourse(courseID: ObjectId) {
-        this.courseIds.push(courseID);
+    addCourse(courseIds: Realm.BSON.ObjectId) {
+        if (this.courseIds === null) {
+            this.courseIds = [];
+        }
+        this.courseIds.push(courseIds);
     }
 
     // Remove course from semester
-    removeCourse(courseID: ObjectId) {
-        this.courseIds = this.courseIds.filter(id => id !== courseID);
+    removeCourse(courseIds: Realm.BSON.ObjectId) {
+        if (this.courseIds === null) {
+            return;
+        }
+        this.courseIds = this.courseIds.filter(id => id !== courseIds);
     }
 
     // Assign semester to program
-    assignProgram(programID: ObjectId) {
-        this.programID = programID; // Assign program ID to semester
+    assignProgram(programId: Realm.BSON.ObjectId) {
+        this.programId = programId; // Assign program ID to semester
     }
 
     // Unassign semester from program
     unassignProgram() {
-        this.programID = null; // Unassign program ID from semester
+        this.programId = null; // Unassign program ID from semester
     }
 
     // Update semester details
@@ -132,7 +140,7 @@ export class Semester extends BaseEntity {
             startDate: 'date',
             endDate: 'date',
             courseIds: 'objectId[]',
-            programID: 'objectId?',
+            programId: 'objectId?',
         },
     };
 }
@@ -149,10 +157,10 @@ export class Course extends BaseEntity {
     startDate: Date = new Date();
     endDate: Date = new Date();
     notes: string = '';
-    projectIds: ObjectId[] = [];
-    semesterID: ObjectId | null = null;
-    constructor(courseName: string, courseCode: string, instructor: string, color: CourseColors, startDate: Date, endDate: Date, notes: string, projectIds?: ObjectId[], semesterID?: ObjectId, id?: ObjectId) {
-        super(id);
+    projectIds: Realm.BSON.ObjectId[] = [];
+    semesterId: Realm.BSON.ObjectId | null = null;
+    constructor(courseName: string, courseCode: string, instructor: string, color: CourseColors, startDate: Date, endDate: Date, notes: string, projectIds?: Realm.BSON.ObjectId[], semesterId?: Realm.BSON.ObjectId, _id?: Realm.BSON.ObjectId) {
+        super(_id);
         this.courseName = courseName;
         this.courseCode = courseCode;
         this.instructor = instructor;
@@ -161,27 +169,27 @@ export class Course extends BaseEntity {
         this.endDate = endDate;
         this.notes = notes;
         this.projectIds = projectIds ?? [];
-        this.semesterID = semesterID ?? null;
+        this.semesterId = semesterId ?? null;
     }
 
     // Add project to course
-    addProject(projectID: ObjectId) {
-        this.projectIds.push(projectID);
+    addProject(projectId: Realm.BSON.ObjectId) {
+        this.projectIds.push(projectId);
     }
 
     // Remove project from course
-    removeProject(projectID: ObjectId) {
-        this.projectIds = this.projectIds.filter(id => id !== projectID);
+    removeProject(projectId: Realm.BSON.ObjectId) {
+        this.projectIds = this.projectIds.filter(id => id !== projectId);
     }
 
     // Assign course to semester
-    assignSemester(semesterID: ObjectId) {
-        this.semesterID = semesterID; // Assign semester ID to course
+    assignSemester(semesterId: Realm.BSON.ObjectId) {
+        this.semesterId = semesterId; // Assign semester ID to course
     }
 
     // Unassign course from semester
     unassignSemester() {
-        this.semesterID = null; // Unassign semester ID from course
+        this.semesterId = null; // Unassign semester ID from course
     }
 
     // Update course details
@@ -209,7 +217,7 @@ export class Course extends BaseEntity {
             endDate: 'date',
             notes: 'string',
             projectIds: 'objectId[]',
-            semesterID: 'objectId?',
+            semesterId: 'objectId?',
         },
     };
 }
@@ -226,10 +234,10 @@ export class Project extends BaseEntity {
     completed: boolean;
     groupName: string;
     notes: string;
-    taskIds: ObjectId[];
-    courseID: ObjectId | null;
-    constructor(projectName: string, estimatedHrs: number, startDate: Date, endDate: Date, completed: boolean, groupName: string, notes: string, taskIds?: ObjectId[], courseID?: ObjectId, id?: ObjectId) {
-        super(id);
+    taskIds: Realm.BSON.ObjectId[];
+    courseId: Realm.BSON.ObjectId | null;
+    constructor(projectName: string, estimatedHrs: number, startDate: Date, endDate: Date, completed: boolean, groupName: string, notes: string, taskIds?: Realm.BSON.ObjectId[], courseId?: Realm.BSON.ObjectId, _id?: Realm.BSON.ObjectId) {
+        super(_id);
         this.projectName = projectName;
         this.estimatedHrs = estimatedHrs;
         this.startDate = startDate;
@@ -238,17 +246,17 @@ export class Project extends BaseEntity {
         this.groupName = groupName;
         this.notes = notes;
         this.taskIds = taskIds ?? [];
-        this.courseID = courseID ?? null;
+        this.courseId = courseId ?? null;
     }
 
     // Add task to project
-    addTask(taskID: ObjectId) {
-        this.taskIds.push(taskID);
+    addTask(taskId: Realm.BSON.ObjectId) {
+        this.taskIds.push(taskId);
     }
 
     // Remove task from project
-    removeTask(taskID: ObjectId) {
-        this.taskIds = this.taskIds.filter(id => id !== taskID);
+    removeTask(taskId: Realm.BSON.ObjectId) {
+        this.taskIds = this.taskIds.filter(id => id !== taskId);
     }
 
     // Mark project as completed
@@ -262,13 +270,13 @@ export class Project extends BaseEntity {
     }
 
     // Assign project to course
-    assignCourse(courseID: ObjectId) {
-        this.courseID = courseID; // Assign course ID to project
+    assignCourse(courseId: Realm.BSON.ObjectId) {
+        this.courseId = courseId; // Assign course ID to project
     }
 
     // Unassign project from course
     unassignCourse() {
-        this.courseID = null; // Unassign course ID from project
+        this.courseId = null; // Unassign course ID from project
     }
 
     // Update project details
@@ -295,7 +303,7 @@ export class Project extends BaseEntity {
             groupName: 'string',
             notes: 'string',
             taskIds: 'objectId[]',
-            courseID: 'objectId?',
+            courseId: 'objectId?',
         },
     };
 }
@@ -311,16 +319,16 @@ export class Task extends BaseEntity {
     endDate: Date = new Date();
     completed: boolean = false;
     notes: string = '';
-    projectID: ObjectId | null = null;
-    constructor(taskName: string, estimatedHrs: number, startDate: Date, endDate: Date, completed: boolean, notes: string, projectID?: ObjectId, id?: ObjectId) {
-        super(id);
+    projectId: Realm.BSON.ObjectId | null = null;
+    constructor(taskName: string, estimatedHrs: number, startDate: Date, endDate: Date, completed: boolean, notes: string, projectId?: Realm.BSON.ObjectId, _id?: Realm.BSON.ObjectId) {
+        super(_id);
         this.taskName = taskName;
         this.estimatedHrs = estimatedHrs;
         this.startDate = startDate;
         this.endDate = endDate;
         this.completed = completed;
         this.notes = notes;
-        this.projectID = projectID ?? null;
+        this.projectId = projectId ?? null;
     }
 
     // Mark task as completed
@@ -334,13 +342,13 @@ export class Task extends BaseEntity {
     }
 
     // Assign task to project
-    assignProject(projectID: ObjectId) {
-        this.projectID = projectID; // Assign project ID to task
+    assignProject(projectId: Realm.BSON.ObjectId) {
+        this.projectId = projectId; // Assign project ID to task
     }
 
     // Unassign task from project
     unassignProject() {
-        this.projectID = null; // Unassign project ID from task
+        this.projectId = null; // Unassign project ID from task
     }
 
     // Update task details
@@ -364,7 +372,7 @@ export class Task extends BaseEntity {
             endDate: 'date',
             completed: 'bool',
             notes: 'string',
-            projectID: 'objectId?',
+            projectId: 'objectId?',
         },
     };
 }

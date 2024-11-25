@@ -1,4 +1,6 @@
-import { ObjectId } from 'bson';
+import Realm from 'realm';
+const { ObjectId } = Realm.BSON;
+
 import { Program, Semester, Course, Project, Task, CourseColors } from '../utility';
 
 // Purpose: To provide mock data for testing purposes.
@@ -104,7 +106,7 @@ export const mockProjects = [
         endDate: new Date('2024-11-16'),
         completed: false,
         groupName: '',
-        notes: 'Database Project 3 notes',
+        notes: 'Database Project 1 notes',
         taskIds: [],
         courseId: new ObjectId('67439d542e13f4ae80324f32'),
     },
@@ -116,7 +118,7 @@ export const mockProjects = [
         endDate: new Date('2024-11-15'),
         completed: false,
         groupName: '',
-        notes: 'WebDev Project 4 notes',
+        notes: 'WebDev Project 1 notes',
         taskIds: [],
         courseId: new ObjectId('67439d552e13f4ae80324f33'),
     },
@@ -212,6 +214,8 @@ function instantiatePrograms() {
     let programs: Program[] = [];
     mockPrograms.forEach((program) => {
         programs.push(new Program(program.schoolName, program.programName, program.programLength, program.programDescription, program.id));
+        // console.log('program: ', program);
+        // console.log(program.id instanceof ObjectId);
     });
     return programs;
 }
@@ -220,6 +224,8 @@ function instantiateSemesters() {
     let semesters: Semester[] = [];
     mockSemesters.forEach((semester) => {
         semesters.push(new Semester(semester.semesterName, semester.startDate, semester.endDate, semester.courseIds, semester.programId, semester.id));
+        // console.log('semester: ', semester);
+        // console.log(semester.id instanceof ObjectId);
     });
     return semesters;
 }
@@ -228,6 +234,8 @@ function instantiateCourses() {
     let courses: Course[] = [];
     mockCourses.forEach((course) => {
         courses.push(new Course(course.courseName, course.courseCode, course.instructor, course.color, course.startDate, course.endDate, course.notes, course.projectIds, course.semesterId, course.id));
+        // console.log('course: ', course);
+        // console.log(course.id instanceof ObjectId);
     });
     return courses;
 }
@@ -236,6 +244,8 @@ function instantiateProjects() {
     let projects: Project[] = [];
     mockProjects.forEach((project) => {
         projects.push(new Project(project.projectName, project.estimatedHrs, project.startDate, project.endDate, project.completed, project.groupName, project.notes, project.taskIds, project.courseId, project.id));
+        // console.log('project: ', project);
+        // console.log(project.id instanceof ObjectId);
     });
     return projects;
 }
@@ -244,6 +254,8 @@ function instantiateTasks() {
     let tasks: Task[] = [];
     mockTasks.forEach((task) => {
         tasks.push(new Task(task.taskName, task.estimatedHrs, task.startDate, task.endDate, task.completed, task.notes, task.projectId, task.id));
+        // console.log('task: ', task);
+        // console.log(task.id instanceof ObjectId);
     });
     return tasks;
 }
