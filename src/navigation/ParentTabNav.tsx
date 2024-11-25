@@ -18,13 +18,14 @@ const projects = mockData.projects;
 const tasks = mockData.tasks;
 
 function ParentTabNav() : React.JSX.Element {
-
+    console.log('ParentTabNav courses: ', courses);
     return (
         <NavigationContainer>
             <Tab.Navigator>
               <Tab.Screen
                 name="Home"
                 component={HomeStackNav}
+                initialParams={{courses}}
               />
               <Tab.Screen
                 name="Program"
