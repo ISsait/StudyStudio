@@ -6,9 +6,10 @@ import HomeStackNav from './HomeStackNav';
 // import ProgramStackNav from './ProgramStackNav';
 import CourseStackNav from './CourseStackNav';
 // import TaskStackNav from './TaskStackNav';
+import ProjectStackNav from './ProjectStackNav';
 
 import { mockData } from '../data/mockData';
-import ProjectStackNav from './ProjectStackNav';
+
 
 const Tab = createMaterialTopTabNavigator();
 

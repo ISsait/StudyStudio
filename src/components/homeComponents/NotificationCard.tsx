@@ -5,11 +5,10 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { commonStyles } from '../../commonStyles';
-import * as utility from '../../utility';
 
-export default function NotificationCard({task, navigation} : {task : utility.TaskObject, navigation : any}) : React.JSX.Element {
+export default function NotificationCard({projectId, navigation} : {projectId : any, navigation : any}) : React.JSX.Element {
 
-    const bgColor = task.course.color;
+    const bgColor = 'blue';
 
     return (
         <TouchableOpacity style={[
@@ -17,14 +16,14 @@ export default function NotificationCard({task, navigation} : {task : utility.Ta
             {backgroundColor: bgColor},
             ]}
             onPress={ () => {
-                navigation.navigate('Tasks', {task: task});
+                navigation.navigate('Project', {projectId: projectId});
                 }}
             >
             <View>
-                <Text style={{fontSize: 20}}>{task.course.courseName}</Text>
-                <Text style={{fontSize: 18}}>{task.task.taskName}</Text>
+                {/* <Text style={{fontSize: 20}}>{course.courseName}</Text> */}
+                <Text style={{fontSize: 18}}>{project.projectName}</Text>
             </View>
-            <Text style={{fontSize: 18}}>{task.task.dueDate}</Text>
+            <Text style={{fontSize: 18}}>{project.endDate}</Text>
         </TouchableOpacity>
     );
 }
