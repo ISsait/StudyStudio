@@ -3,19 +3,30 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { NavigationContainer } from '@react-navigation/native';
 
 import HomeStackNav from './HomeStackNav';
-import ProgramStackNav from './ProgramStackNav';
+// import ProgramStackNav from './ProgramStackNav';
 import CourseStackNav from './CourseStackNav';
-import TaskStackNav from './TaskStackNav';
+// import TaskStackNav from './TaskStackNav';
 
 import { mockData } from '../data/mockData';
+import ProjectStackNav from './ProjectStackNav';
 
 const Tab = createMaterialTopTabNavigator();
 
-const programs = mockData.programs;
-const semesters = mockData.semesters;
+// const programs = mockData.programs;
+// const semesters = mockData.semesters;
 const courses = mockData.courses;
 const projects = mockData.projects;
-const tasks = mockData.tasks;
+// const tasks = mockData.tasks;
+
+let allCourseIds : string[] = [];
+for (const course of courses) {
+    allCourseIds.push(course._id.toString());
+}
+
+let allProjectIds : string[] = [];
+for (const project of projects) {
+    allProjectIds.push(project._id.toString());
+}
 
 function ParentTabNav() : React.JSX.Element {
     console.log('ParentTabNav courses: ', courses);
@@ -25,20 +36,26 @@ function ParentTabNav() : React.JSX.Element {
               <Tab.Screen
                 name="Home"
                 component={HomeStackNav}
-                initialParams={{courses}}
+                initialParams={{allCourseIds}}
               />
-              <Tab.Screen
+              {/* <Tab.Screen
                 name="Program"
                 component={ProgramStackNav}
-              />
+              /> */}
               <Tab.Screen
                 name="Courses"
                 component={CourseStackNav}
+                initialParams={{allCourseIds}}
               />
               <Tab.Screen
+                name="Projects"
+                component={ProjectStackNav}
+                initialParams={{allProjectIds}}
+              />
+              {/* <Tab.Screen
                 name="Tasks"
                 component={TaskStackNav}
-              />
+              /> */}
             </Tab.Navigator>
         </NavigationContainer>
     );

@@ -7,8 +7,8 @@ import { commonStyles } from '../commonStyles';
 
 export default function TaskPage () : React.JSX.Element {
     return (
-        <View>
-            <Text style={commonStyles.body}>Task Page Body</Text>
+        <View style={commonStyles.body}>
+            <Text>Task Page Body</Text>
         </View>
     );
 }

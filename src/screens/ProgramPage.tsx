@@ -7,8 +7,8 @@ import { commonStyles } from '../commonStyles';
 
 export default function ProgramPage () : React.JSX.Element {
     return (
-        <View>
-            <Text style={commonStyles.body}>Program Page Body</Text>
+        <View style={commonStyles.body}>
+            <Text>Program Page Body</Text>
         </View>
     );
 }

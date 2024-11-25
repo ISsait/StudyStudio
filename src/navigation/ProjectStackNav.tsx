@@ -1,18 +1,18 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HomePage from '../screens/HomePage';
+import ProjectPage from '../screens/ProjectPage';
 import { commonStyles } from '../commonStyles';
 
 const Stack = createNativeStackNavigator();
 
-function HomeStackNav({route} : {route : any}) : React.JSX.Element {
-    const allCourseIds : string[] = route.params.allCourseIds;
-    console.log('HomeStackNav courses: ', allCourseIds);
+function ProjectStackNav({route} : {route : any}) : React.JSX.Element {
+    const allProjectIds : string[] = route.params.allProjectIds;
+    console.log('ProjectStackNav project Ids: ', allProjectIds);
     return (
         <Stack.Navigator>
             <Stack.Screen
-                name="Home Page"
-                component={HomePage}
+                name="View Projects"
+                component={ProjectPage}
                 options={{
                     headerTitleStyle: commonStyles.stackHeaderText,
                     headerTransparent: true,
@@ -23,4 +23,4 @@ function HomeStackNav({route} : {route : any}) : React.JSX.Element {
     );
 }
 
-export default HomeStackNav;
+export default ProjectStackNav;
