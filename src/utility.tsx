@@ -24,8 +24,8 @@ export enum CourseColors {
 
 class BaseEntity {
     id: ObjectId;
-    constructor() {
-        this.id = new ObjectId();
+    constructor(id?: ObjectId) {
+        this.id = id ?? new ObjectId();
     }
 }
 
@@ -38,8 +38,8 @@ export class Program extends BaseEntity {
     programName: string;
     programLength: number;
     programDescription: string;
-    constructor(schoolName: string, programName: string, programLength: number, programDescription: string) {
-        super();
+    constructor(schoolName: string, programName: string, programLength: number, programDescription: string, id?: ObjectId) {
+        super(id);
         this.schoolName = schoolName;
         this.programName = programName;
         this.programLength = programLength;
@@ -66,35 +66,35 @@ export class Semester extends BaseEntity {
     semesterName: string;
     startDate: string;
     endDate: string;
-    courseIds: string[];
-    programID: string;
-    constructor(semesterName: string, startDate: string, endDate: string, courseIds: string[], programID: string) {
-        super();
+    courseIds: ObjectId[];
+    programID: ObjectId | null;
+    constructor(semesterName: string, startDate: string, endDate: string, courseIds: ObjectId[], programID?: ObjectId, id?: ObjectId) {
+        super(id);
         this.semesterName = semesterName;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.courseIds = courseIds;
-        this.programID = programID;
+        this.courseIds = courseIds ?? [];
+        this.programID = programID ?? null;
     }
 
     // Add course to semester
-    addCourse(courseID: string) {
+    addCourse(courseID: ObjectId) {
         this.courseIds.push(courseID);
     }
 
     // Remove course from semester
-    removeCourse(courseID: string) {
+    removeCourse(courseID: ObjectId) {
         this.courseIds = this.courseIds.filter(id => id !== courseID); // Non-mutating filter
     }
 
     // Assign semester to program
-    assignProgram(programID: string) {
+    assignProgram(programID: ObjectId) {
         this.programID = programID; // Assign program ID to semester
     }
 
     // Unassign semester from program
     unassignProgram() {
-        this.programID = ''; // Unassign program ID from semester
+        this.programID = null; // Unassign program ID from semester
     }
 
     // Update semester details
@@ -111,7 +111,7 @@ export class Semester extends BaseEntity {
 }
 
 // Default semester object for initialization of semester state
-export const defaultSemester: Semester = new Semester('', '', '', [], '');
+export const defaultSemester: Semester = new Semester('', '', '', []);
 
 /*
 * CourseType: Course object type definition
@@ -125,10 +125,10 @@ export class Course extends BaseEntity {
     startDate: string;
     endDate: string;
     notes: string;
-    projectIds: string[];
-    semesterID: string;
-    constructor(courseName: string, courseCode: string, instructor: string, color: CourseColors, startDate: string, endDate: string, notes: string, projectIds: string[], semesterID: string) {
-        super();
+    projectIds: ObjectId[];
+    semesterID: ObjectId | null;
+    constructor(courseName: string, courseCode: string, instructor: string, color: CourseColors, startDate: string, endDate: string, notes: string, projectIds?: ObjectId[], semesterID?: ObjectId, id?: ObjectId) {
+        super(id);
         this.courseName = courseName;
         this.courseCode = courseCode;
         this.instructor = instructor;
@@ -136,28 +136,28 @@ export class Course extends BaseEntity {
         this.startDate = startDate;
         this.endDate = endDate;
         this.notes = notes;
-        this.projectIds = projectIds;
-        this.semesterID = semesterID;
+        this.projectIds = projectIds ?? [];
+        this.semesterID = semesterID ?? null;
     }
 
     // Add project to course
-    addProject(projectID: string) {
+    addProject(projectID: ObjectId) {
         this.projectIds.push(projectID);
     }
 
     // Remove project from course
-    removeProject(projectID: string) {
+    removeProject(projectID: ObjectId) {
         this.projectIds = this.projectIds.filter(id => id !== projectID); // Non-mutating filter
     }
 
     // Assign course to semester
-    assignSemester(semesterID: string) {
+    assignSemester(semesterID: ObjectId) {
         this.semesterID = semesterID; // Assign semester ID to course
     }
 
     // Unassign course from semester
     unassignSemester() {
-        this.semesterID = ''; // Unassign semester ID from course
+        this.semesterID = null; // Unassign semester ID from course
     }
 
     // Update course details
@@ -173,7 +173,7 @@ export class Course extends BaseEntity {
 }
 
 // Default course object for initialization of course state
-export const defaultCourse: Course = new Course('', '', '', CourseColors.pink, '', '', '', [], '');
+export const defaultCourse: Course = new Course('', '', '', CourseColors.pink, '', '', '');
 
 /*
 * ProjectType: Project object type definition
@@ -187,10 +187,10 @@ export class Project extends BaseEntity {
     completed: boolean;
     groupName: string;
     notes: string;
-    taskIds: string[];
-    courseID: string;
-    constructor(projectName: string, estimatedHrs: number, startDate: string, endDate: string, completed: boolean, groupName: string, notes: string, taskIds: string[], courseID: string) {
-        super();
+    taskIds: ObjectId[];
+    courseID: ObjectId | null;
+    constructor(projectName: string, estimatedHrs: number, startDate: string, endDate: string, completed: boolean, groupName: string, notes: string, taskIds?: ObjectId[], courseID?: ObjectId, id?: ObjectId) {
+        super(id);
         this.projectName = projectName;
         this.estimatedHrs = estimatedHrs;
         this.startDate = startDate;
@@ -198,17 +198,17 @@ export class Project extends BaseEntity {
         this.completed = completed;
         this.groupName = groupName;
         this.notes = notes;
-        this.taskIds = taskIds;
-        this.courseID = courseID;
+        this.taskIds = taskIds ?? [];
+        this.courseID = courseID ?? null;
     }
 
     // Add task to project
-    addTask(taskID: string) {
+    addTask(taskID: ObjectId) {
         this.taskIds.push(taskID);
     }
 
     // Remove task from project
-    removeTask(taskID: string) {
+    removeTask(taskID: ObjectId) {
         this.taskIds = this.taskIds.filter(id => id !== taskID); // Non-mutating filter
     }
 
@@ -223,13 +223,13 @@ export class Project extends BaseEntity {
     }
 
     // Assign project to course
-    assignCourse(courseID: string) {
+    assignCourse(courseID: ObjectId) {
         this.courseID = courseID; // Assign course ID to project
     }
 
     // Unassign project from course
     unassignCourse() {
-        this.courseID = ''; // Unassign course ID from project
+        this.courseID = null; // Unassign course ID from project
     }
 
     // Update project details
@@ -244,7 +244,7 @@ export class Project extends BaseEntity {
 }
 
 // Default project object for initialization of project state
-export const defaultProject: Project = new Project('', 0, '', '', false, '', '', [], '');
+export const defaultProject: Project = new Project('', 0, '', '', false, '', '');
 
 /*
 * TaskType: Task object type definition
@@ -253,18 +253,20 @@ export const defaultProject: Project = new Project('', 0, '', '', false, '', '',
 export class Task extends BaseEntity {
     taskName: string;
     estimatedHrs: number;
+    startDate: string;
     endDate: string;
     completed: boolean;
     notes: string;
-    projectID: string;
-    constructor(taskName: string, estimatedHrs: number, endDate: string, completed: boolean, notes: string, projectID: string) {
-        super();
+    projectID: ObjectId | null;
+    constructor(taskName: string, estimatedHrs: number, startDate: string, endDate: string, completed: boolean, notes: string, projectID?: ObjectId, id?: ObjectId) {
+        super(id);
         this.taskName = taskName;
         this.estimatedHrs = estimatedHrs;
+        this.startDate = startDate;
         this.endDate = endDate;
         this.completed = completed;
         this.notes = notes;
-        this.projectID = projectID;
+        this.projectID = projectID ?? null;
     }
 
     // Mark task as completed
@@ -278,37 +280,24 @@ export class Task extends BaseEntity {
     }
 
     // Assign task to project
-    assignProject(projectID: string) {
+    assignProject(projectID: ObjectId) {
         this.projectID = projectID; // Assign project ID to task
     }
 
     // Unassign task from project
     unassignProject() {
-        this.projectID = ''; // Unassign project ID from task
+        this.projectID = null; // Unassign project ID from task
     }
 
     // Update task details
-    updateTask(taskName: string, estimatedHrs: number, endDate: string, notes: string) {
+    updateTask(taskName: string, estimatedHrs: number,startDate: string, endDate: string, notes: string) {
         this.taskName = taskName;
         this.estimatedHrs = estimatedHrs;
+        this.startDate = startDate;
         this.endDate = endDate;
         this.notes = notes;
     }
 }
 
 // Default task object for initialization of task state
-export const defaultTask: Task = new Task('', 0, '', false, '', '');
-
-
-/*
-* TaskObject: Task object type definition
-* will not use this -- delete later
-*/
-// // Task object type definition
-// export type TaskObject = {
-//     task: TaskType,
-//     course: CourseType,
-//     project: ProjectType,
-//     semester: SemesterType,
-//     program: ProgramType,
-// };
+export const defaultTask: Task = new Task('', 0, '', '', false, '');
