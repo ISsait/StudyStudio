@@ -25,6 +25,9 @@ export enum CourseColors {
 class BaseEntity {
     id: ObjectId;
     constructor(id?: ObjectId) {
+        if (id && !ObjectId.isValid(id)) {
+            throw new Error('Invalid ID');
+        }
         this.id = id ?? new ObjectId();
     }
 }
@@ -34,10 +37,10 @@ class BaseEntity {
 */
 // Program type definition
 export class Program extends BaseEntity {
-    schoolName: string;
-    programName: string;
-    programLength: number;
-    programDescription: string;
+    schoolName: string = '';
+    programName: string = '';
+    programLength: number = 0;
+    programDescription: string = '';
     constructor(schoolName: string, programName: string, programLength: number, programDescription: string, id?: ObjectId) {
         super(id);
         this.schoolName = schoolName;
@@ -53,22 +56,32 @@ export class Program extends BaseEntity {
         this.programLength = programLength;
         this.programDescription = programDescription;
     }
-}
 
-// Default program object for initialization of program state
-export const defaultProgram: Program = new Program('', '', 0, '');
+    // REALM schema for Program object
+    static programSchema = {
+        name: 'Program',
+        primaryKey: '_id',
+        properties: {
+            _id: 'objectId',
+            schoolName: 'string',
+            programName: 'string',
+            programLength: 'int',
+            programDescription: 'string',
+        },
+    };
+}
 
 /*
 * SemesterType: Semester object type definition
 */
 // Semester type definition
 export class Semester extends BaseEntity {
-    semesterName: string;
-    startDate: string;
-    endDate: string;
-    courseIds: ObjectId[];
-    programID: ObjectId | null;
-    constructor(semesterName: string, startDate: string, endDate: string, courseIds: ObjectId[], programID?: ObjectId, id?: ObjectId) {
+    semesterName: string = '';
+    startDate: Date = new Date();
+    endDate: Date = new Date();
+    courseIds: ObjectId[] = [];
+    programID: ObjectId | null = null;
+    constructor(semesterName: string, startDate: Date, endDate: Date, courseIds: ObjectId[], programID?: ObjectId, id?: ObjectId) {
         super(id);
         this.semesterName = semesterName;
         this.startDate = startDate;
@@ -84,7 +97,7 @@ export class Semester extends BaseEntity {
 
     // Remove course from semester
     removeCourse(courseID: ObjectId) {
-        this.courseIds = this.courseIds.filter(id => id !== courseID); // Non-mutating filter
+        this.courseIds = this.courseIds.filter(id => id !== courseID);
     }
 
     // Assign semester to program
@@ -98,7 +111,7 @@ export class Semester extends BaseEntity {
     }
 
     // Update semester details
-    updateSemester(semesterName: string, startDate: string, endDate: string) {
+    updateSemester(semesterName: string, startDate: Date, endDate: Date) {
         this.semesterName = semesterName;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -108,26 +121,37 @@ export class Semester extends BaseEntity {
     getDuration() {
         return this.startDate + ' - ' + this.endDate;
     }
-}
 
-// Default semester object for initialization of semester state
-export const defaultSemester: Semester = new Semester('', '', '', []);
+    // REALM schema for Semester object
+    static semesterSchema = {
+        name: 'Semester',
+        primaryKey: '_id',
+        properties: {
+            _id: 'objectId',
+            semesterName: 'string',
+            startDate: 'date',
+            endDate: 'date',
+            courseIds: 'objectId[]',
+            programID: 'objectId?',
+        },
+    };
+}
 
 /*
 * CourseType: Course object type definition
 */
 // Course type definition
 export class Course extends BaseEntity {
-    courseName: string;
-    courseCode: string;
-    instructor: string;
-    color: CourseColors;
-    startDate: string;
-    endDate: string;
-    notes: string;
-    projectIds: ObjectId[];
-    semesterID: ObjectId | null;
-    constructor(courseName: string, courseCode: string, instructor: string, color: CourseColors, startDate: string, endDate: string, notes: string, projectIds?: ObjectId[], semesterID?: ObjectId, id?: ObjectId) {
+    courseName: string = '';
+    courseCode: string = '';
+    instructor: string = '';
+    color: CourseColors = CourseColors.pink;
+    startDate: Date = new Date();
+    endDate: Date = new Date();
+    notes: string = '';
+    projectIds: ObjectId[] = [];
+    semesterID: ObjectId | null = null;
+    constructor(courseName: string, courseCode: string, instructor: string, color: CourseColors, startDate: Date, endDate: Date, notes: string, projectIds?: ObjectId[], semesterID?: ObjectId, id?: ObjectId) {
         super(id);
         this.courseName = courseName;
         this.courseCode = courseCode;
@@ -147,7 +171,7 @@ export class Course extends BaseEntity {
 
     // Remove project from course
     removeProject(projectID: ObjectId) {
-        this.projectIds = this.projectIds.filter(id => id !== projectID); // Non-mutating filter
+        this.projectIds = this.projectIds.filter(id => id !== projectID);
     }
 
     // Assign course to semester
@@ -161,7 +185,7 @@ export class Course extends BaseEntity {
     }
 
     // Update course details
-    updateCourse(courseName: string, courseCode: string, instructor: string, color: CourseColors, startDate: string, endDate: string, notes: string) {
+    updateCourse(courseName: string, courseCode: string, instructor: string, color: CourseColors, startDate: Date, endDate: Date, notes: string) {
         this.courseName = courseName;
         this.courseCode = courseCode;
         this.instructor = instructor;
@@ -170,10 +194,25 @@ export class Course extends BaseEntity {
         this.endDate = endDate;
         this.notes = notes;
     }
-}
 
-// Default course object for initialization of course state
-export const defaultCourse: Course = new Course('', '', '', CourseColors.pink, '', '', '');
+    // REALM schema for Course object
+    static courseSchema = {
+        name: 'Course',
+        primaryKey: '_id',
+        properties: {
+            _id: 'objectId',
+            courseName: 'string',
+            courseCode: 'string',
+            instructor: 'string',
+            color: 'string',
+            startDate: 'date',
+            endDate: 'date',
+            notes: 'string',
+            projectIds: 'objectId[]',
+            semesterID: 'objectId?',
+        },
+    };
+}
 
 /*
 * ProjectType: Project object type definition
@@ -182,14 +221,14 @@ export const defaultCourse: Course = new Course('', '', '', CourseColors.pink, '
 export class Project extends BaseEntity {
     projectName: string;
     estimatedHrs: number;
-    startDate: string;
-    endDate: string;
+    startDate: Date;
+    endDate: Date;
     completed: boolean;
     groupName: string;
     notes: string;
     taskIds: ObjectId[];
     courseID: ObjectId | null;
-    constructor(projectName: string, estimatedHrs: number, startDate: string, endDate: string, completed: boolean, groupName: string, notes: string, taskIds?: ObjectId[], courseID?: ObjectId, id?: ObjectId) {
+    constructor(projectName: string, estimatedHrs: number, startDate: Date, endDate: Date, completed: boolean, groupName: string, notes: string, taskIds?: ObjectId[], courseID?: ObjectId, id?: ObjectId) {
         super(id);
         this.projectName = projectName;
         this.estimatedHrs = estimatedHrs;
@@ -209,7 +248,7 @@ export class Project extends BaseEntity {
 
     // Remove task from project
     removeTask(taskID: ObjectId) {
-        this.taskIds = this.taskIds.filter(id => id !== taskID); // Non-mutating filter
+        this.taskIds = this.taskIds.filter(id => id !== taskID);
     }
 
     // Mark project as completed
@@ -233,7 +272,7 @@ export class Project extends BaseEntity {
     }
 
     // Update project details
-    updateProject(projectName: string, estimatedHrs: number, startDate: string, endDate: string, groupName: string, notes: string) {
+    updateProject(projectName: string, estimatedHrs: number, startDate: Date, endDate: Date, groupName: string, notes: string) {
         this.projectName = projectName;
         this.estimatedHrs = estimatedHrs;
         this.startDate = startDate;
@@ -241,24 +280,39 @@ export class Project extends BaseEntity {
         this.groupName = groupName;
         this.notes = notes;
     }
-}
 
-// Default project object for initialization of project state
-export const defaultProject: Project = new Project('', 0, '', '', false, '', '');
+    // REALM schema for Project object
+    static projectSchema = {
+        name: 'Project',
+        primaryKey: '_id',
+        properties: {
+            _id: 'objectId',
+            projectName: 'string',
+            estimatedHrs: 'int',
+            startDate: 'date',
+            endDate: 'date',
+            completed: 'bool',
+            groupName: 'string',
+            notes: 'string',
+            taskIds: 'objectId[]',
+            courseID: 'objectId?',
+        },
+    };
+}
 
 /*
 * TaskType: Task object type definition
 */
 // Task type definition
 export class Task extends BaseEntity {
-    taskName: string;
-    estimatedHrs: number;
-    startDate: string;
-    endDate: string;
-    completed: boolean;
-    notes: string;
-    projectID: ObjectId | null;
-    constructor(taskName: string, estimatedHrs: number, startDate: string, endDate: string, completed: boolean, notes: string, projectID?: ObjectId, id?: ObjectId) {
+    taskName: string = '';
+    estimatedHrs: number = 0;
+    startDate: Date = new Date();
+    endDate: Date = new Date();
+    completed: boolean = false;
+    notes: string = '';
+    projectID: ObjectId | null = null;
+    constructor(taskName: string, estimatedHrs: number, startDate: Date, endDate: Date, completed: boolean, notes: string, projectID?: ObjectId, id?: ObjectId) {
         super(id);
         this.taskName = taskName;
         this.estimatedHrs = estimatedHrs;
@@ -290,14 +344,27 @@ export class Task extends BaseEntity {
     }
 
     // Update task details
-    updateTask(taskName: string, estimatedHrs: number,startDate: string, endDate: string, notes: string) {
+    updateTask(taskName: string, estimatedHrs: number,startDate: Date, endDate: Date, notes: string) {
         this.taskName = taskName;
         this.estimatedHrs = estimatedHrs;
         this.startDate = startDate;
         this.endDate = endDate;
         this.notes = notes;
     }
-}
 
-// Default task object for initialization of task state
-export const defaultTask: Task = new Task('', 0, '', '', false, '');
+    // REALM schema for Task object
+    static taskSchema = {
+        name: 'Task',
+        primaryKey: '_id',
+        properties: {
+            _id: 'objectId',
+            taskName: 'string',
+            estimatedHrs: 'int',
+            startDate: 'date',
+            endDate: 'date',
+            completed: 'bool',
+            notes: 'string',
+            projectID: 'objectId?',
+        },
+    };
+}
