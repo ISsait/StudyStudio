@@ -7,53 +7,8 @@ export function getRealm() {
         schemaVersion: 1,
     });
 }
-
-export async function writeInitialData(realm: Realm, mockData: any) {
-    try {
-        realm.write(() => {
-            realm.deleteAll();
-            mockData.programs.forEach((program : Program) => {
-                realm.create('Program', program);
-                console.log('Program created: ', program);
-            });
-            mockData.semesters.forEach((semester : Semester) => {
-                realm.create('Semester', semester);
-                console.log('Semester created: ', semester);
-            });
-            mockData.courses.forEach((course : Course) => {
-                realm.create('Course', course);
-                console.log('Course created: ', course);
-            });
-            mockData.projects.forEach((project : Project) => {
-                realm.create('Project', project);
-                console.log('Project created: ', project);
-            });
-            mockData.tasks.forEach((task : Task) => {
-                realm.create('Task', task);
-                console.log('Task created: ', task);
-            });
-        });
-    } catch (error) {
-        console.error('Error writing initial data: ', error);
-    }
-}
-function instantiatePrograms(programsLive: any) {
-    let programs: Program[] = [];
-    programsLive.forEach((program : any) => {
-        programs.push(new Program(program.schoolName, program.programName, program.programLength, program.programDescription, program._id));
-    });
-    return programs;
-}
-export async function getPrograms(realm: Realm) {
-    let programsLive;
-    let programsApp: Program[] = [];
-    try {
-        programsLive = realm.objects('Program');
-        programsApp = instantiatePrograms(programsLive);
-        return programsApp;
-    } catch (error) {
-        console.error('Error getting programs: ', error);
-    }
+export function getPrograms(realm: Realm) {
+    return realm.objects('Program');
 }
 
 export function getSemesters(realm: Realm) {

@@ -7,7 +7,6 @@ const Stack = createNativeStackNavigator();
 
 function CourseStackNav({route} : {route : any}) : React.JSX.Element {
     const allCourseIds : string[] = route.params.allCourseIds;
-    console.log('CourseStackNav course Ids: ', allCourseIds);
     return (
         <Stack.Navigator>
             <Stack.Screen

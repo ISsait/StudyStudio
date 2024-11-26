@@ -21,7 +21,7 @@ export default function NotificationCard({projectId, navigation} : {projectId : 
             >
             <View>
                 {/* <Text style={{fontSize: 20}}>{course.courseName}</Text> */}
-                <Text style={{fontSize: 18}}>{project.projectName}</Text>
+                <Text style={{fontSize: 18}}>{projectId}</Text>
             </View>
             <Text style={{fontSize: 18}}>{project.endDate}</Text>
         </TouchableOpacity>

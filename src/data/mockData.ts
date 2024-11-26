@@ -2,6 +2,15 @@ import Realm from 'realm';
 const { ObjectId } = Realm.BSON;
 
 import { Program, Semester, Course, Project, Task, CourseColors } from '../utility';
+import {
+    getRealm,
+    closeRealm,
+    createProgram,
+    createSemester,
+    createCourse,
+    createProject,
+    createTask,
+} from '../data/storage/storageManager';
 
 // Purpose: To provide mock data for testing purposes.
 
@@ -267,3 +276,26 @@ export const mockData = {
     projects: instantiateProjects(),
     tasks: instantiateTasks(),
 };
+
+// write mock data to realm
+async function writeMockDataToRealm() {
+    const realm = await getRealm();
+    mockData.programs.forEach((program) => {
+        createProgram(realm, program);
+    });
+    mockData.semesters.forEach((semester) => {
+        createSemester(realm, semester);
+    });
+    mockData.courses.forEach((course) => {
+        createCourse(realm, course);
+    });
+    mockData.projects.forEach((project) => {
+        createProject(realm, project);
+    });
+    mockData.tasks.forEach((task) => {
+        createTask(realm, task);
+    });
+    closeRealm(realm);
+}
+
+writeMockDataToRealm();

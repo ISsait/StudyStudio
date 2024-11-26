@@ -1,6 +1,7 @@
 import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+// import { useState } from 'react';
 
 import HomeStackNav from './HomeStackNav';
 // import ProgramStackNav from './ProgramStackNav';
@@ -30,7 +31,10 @@ for (const project of projects) {
 }
 
 function ParentTabNav() : React.JSX.Element {
-    console.log('ParentTabNav courses: ', courses);
+  // const [courseList, setCourses] = useState(courses);
+  // const [projectList, setProjects] = useState(projects);
+
+
     return (
         <NavigationContainer>
             <Tab.Navigator>

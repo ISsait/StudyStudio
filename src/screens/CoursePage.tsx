@@ -4,6 +4,22 @@ import {
     Text,
 } from 'react-native';
 import { commonStyles } from '../commonStyles';
+import {
+    getRealm,
+    closeRealm,
+    getCourses,
+} from '../data/storage/storageManager';
+
+async function getCoursesFromStorage() {
+    const realm = await getRealm();
+    const courses = getCourses(realm);
+    courses.forEach((course) => {
+        console.log('Course: ', course.courseName);
+    });
+    closeRealm(realm);
+}
+
+getCoursesFromStorage();
 
 export default function CoursePage () : React.JSX.Element {
     return (

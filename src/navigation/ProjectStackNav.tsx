@@ -7,7 +7,6 @@ const Stack = createNativeStackNavigator();
 
 function ProjectStackNav({route} : {route : any}) : React.JSX.Element {
     const allProjectIds : string[] = route.params.allProjectIds;
-    console.log('ProjectStackNav project Ids: ', allProjectIds);
     return (
         <Stack.Navigator>
             <Stack.Screen
