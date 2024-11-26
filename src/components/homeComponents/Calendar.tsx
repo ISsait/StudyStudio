@@ -19,7 +19,7 @@ export default function CalendarComponent () : React.JSX.Element {
                 current={currentDate.toISOString().split('T')[0]}
                 minDate={`${currentYear}-${currentMonth + 1}-1`}
                 maxDate={`${currentYear}-${currentMonth + 1}-${lastDay.getDate()}`}
-                onDayPress={(day : any) => {console.log('selected day', day)}}
+                onDayPress={(day : any) => {console.log('selected day', day);}}
                 monthFormat={'MMMM yyyy'}
                 hideExtraDays={false}
                 disableMonthChange={true}

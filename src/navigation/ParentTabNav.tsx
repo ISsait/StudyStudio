@@ -4,9 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 // import { useState } from 'react';
 
 import HomeStackNav from './HomeStackNav';
-// import ProgramStackNav from './ProgramStackNav';
 import CourseStackNav from './CourseStackNav';
-// import TaskStackNav from './TaskStackNav';
 import ProjectStackNav from './ProjectStackNav';
 
 import { mockData } from '../data/mockData';
@@ -14,11 +12,8 @@ import { mockData } from '../data/mockData';
 
 const Tab = createMaterialTopTabNavigator();
 
-// const programs = mockData.programs;
-// const semesters = mockData.semesters;
 const courses = mockData.courses;
 const projects = mockData.projects;
-// const tasks = mockData.tasks;
 
 let allCourseIds : string[] = [];
 for (const course of courses) {
@@ -43,10 +38,6 @@ function ParentTabNav() : React.JSX.Element {
                 component={HomeStackNav}
                 initialParams={{allCourseIds}}
               />
-              {/* <Tab.Screen
-                name="Program"
-                component={ProgramStackNav}
-              /> */}
               <Tab.Screen
                 name="Courses"
                 component={CourseStackNav}
@@ -57,10 +48,6 @@ function ParentTabNav() : React.JSX.Element {
                 component={ProjectStackNav}
                 initialParams={{allProjectIds}}
               />
-              {/* <Tab.Screen
-                name="Tasks"
-                component={TaskStackNav}
-              /> */}
             </Tab.Navigator>
         </NavigationContainer>
     );

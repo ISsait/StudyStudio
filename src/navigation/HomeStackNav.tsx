@@ -5,8 +5,7 @@ import { commonStyles } from '../commonStyles';
 
 const Stack = createNativeStackNavigator();
 
-function HomeStackNav({route} : {route : any}) : React.JSX.Element {
-    const allCourseIds : string[] = route.params.allCourseIds;
+function HomeStackNav() : React.JSX.Element {
     return (
         <Stack.Navigator>
             <Stack.Screen

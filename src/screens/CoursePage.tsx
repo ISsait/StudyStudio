@@ -15,6 +15,7 @@ async function getCoursesFromStorage() {
     const courses = getCourses(realm);
     courses.forEach((course) => {
         console.log('Course: ', course.courseName);
+        console.log(' Entire Course: ', course);
     });
     closeRealm(realm);
 }
