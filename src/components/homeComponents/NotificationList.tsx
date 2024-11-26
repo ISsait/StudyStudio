@@ -9,9 +9,9 @@ import { commonStyles } from '../../commonStyles';
 import { TEST_DATA_PROJECTS } from '../../utility';
 import NotificationCard from './NotificationCard';
 
-    const [studentProjects, setStudentProjects] = useState(TEST_DATA_PROJECTS);
-
 export default function NotificationList () : React.JSX.Element {
+    const [studentProjects, setStudentProjects] = useState(TEST_DATA_PROJECTS);
+   
     return (
         <View>
             <Text style={commonStyles.body}>Home Page Body</Text>
