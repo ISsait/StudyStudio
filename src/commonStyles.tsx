@@ -45,12 +45,10 @@ export const commonStyles = StyleSheet.create({
 
     // Common Pages
     body: {
+        flex: 1,
         fontSize: 16,
         color: 'black',
-    },
-    sectionContainer: {
-        marginTop: 32,
-        paddingHorizontal: 24,
+        justifyContent: 'space-between',
     },
 
     // Components
@@ -59,5 +57,18 @@ export const commonStyles = StyleSheet.create({
         margin: 16,
         right: 0,
         bottom: 0,
+    },
+    calendar: {
+        backgroundColor: 'white',
+        borderRadius: 5,
+        padding: 10,
+        margin: 10,
+        borderWidth: 1,
+    },
+    notificationCard: {
+        flexDirection: 'row',
+        padding: 10,
+        margin: 10,
+        borderRadius: 5,
     },
 });

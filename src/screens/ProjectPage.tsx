@@ -5,10 +5,10 @@ import {
 } from 'react-native';
 import { commonStyles } from '../commonStyles';
 
-export default function TaskPage () : React.JSX.Element {
+export default function ProjectPage () : React.JSX.Element {
     return (
-        <View>
-            <Text style={commonStyles.body}>Task Page Body</Text>
+        <View style={commonStyles.body}>
+            <Text>View Projects</Text>
         </View>
     );
 }

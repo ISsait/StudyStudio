@@ -1,16 +1,17 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import TaskPage from '../screens/TaskPage';
+import ProjectPage from '../screens/ProjectPage';
 import { commonStyles } from '../commonStyles';
 
 const Stack = createNativeStackNavigator();
 
-function TaskStackNav() : React.JSX.Element {
+function ProjectStackNav({route} : {route : any}) : React.JSX.Element {
+    const allProjectIds : string[] = route.params.allProjectIds;
     return (
         <Stack.Navigator>
             <Stack.Screen
-                name="View Tasks"
-                component={TaskPage}
+                name="View Projects"
+                component={ProjectPage}
                 options={{
                     headerTitleStyle: commonStyles.stackHeaderText,
                     headerTransparent: true,
@@ -21,4 +22,4 @@ function TaskStackNav() : React.JSX.Element {
     );
 }
 
-export default TaskStackNav;
+export default ProjectStackNav;
