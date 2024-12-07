@@ -114,6 +114,11 @@ export const mockData = {
 // write mock data to realm
 async function writeMockDataToRealm() {
     const realm = await getRealm();
+    if (realm.objects('Course').length > 0 || realm.objects('Project').length > 0) {
+        console.log('Data already exists in Realm');
+        closeRealm(realm);
+        return;
+    }
     mockData.courses.forEach((course) => {
         createCourse(realm, course);
     });

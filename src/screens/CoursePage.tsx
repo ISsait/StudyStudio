@@ -10,17 +10,17 @@ import {
     getCourses,
 } from '../data/storage/storageManager';
 
-async function getCoursesFromStorage() {
-    const realm = await getRealm();
-    const courses = getCourses(realm);
-    courses.forEach((course) => {
-        console.log('Course: ', course.courseName);
-        console.log(' Entire Course: ', course);
-    });
-    closeRealm(realm);
-}
+// async function getCoursesFromStorage() {
+//     const realm = await getRealm();
+//     const courses = getCourses(realm);
+//     courses.forEach((course) => {
+//         console.log('Course: ', course.courseName);
+//         console.log(' Entire Course: ', course);
+//     });
+//     closeRealm(realm);
+// }
 
-getCoursesFromStorage();
+// getCoursesFromStorage();
 
 export default function CoursePage () : React.JSX.Element {
     return (

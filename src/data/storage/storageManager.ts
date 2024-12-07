@@ -1,42 +1,66 @@
 import Realm from 'realm';
 import { Course, Project } from '../../utility';
 
-export function getRealm() {
-    return Realm.open({
-        schema: [ Course.courseSchema, Project.projectSchema ],
+export async function getRealm() {
+    return await Realm.open({
+        schema: [Course.courseSchema, Project.projectSchema],
         schemaVersion: 1,
     });
 }
 
 export function getCourses(realm: Realm) {
-    return realm.objects('Course');
+    try {
+        return realm.objects('Course');
+    } catch (error) {
+        console.error('Error getting courses: ', error);
+    }
 }
 
 export function getProjects(realm: Realm) {
-    return realm.objects('Project');
+    try {
+        return realm.objects('Project');
+    } catch (error) {
+        console.error('Error getting projects: ', error);
+    }
 }
 
 export function createCourse(realm: Realm, course: Course) {
     realm.write(() => {
-        realm.create('Course', course);
+        try {
+            realm.create('Course', course);
+        } catch (error) {
+            console.error('Error creating course: ', error);
+        }
     });
 }
 
 export function createProject(realm: Realm, project: Project) {
     realm.write(() => {
-        realm.create('Project', project);
+        try {
+            realm.create('Project', project);
+        } catch (error) {
+            console.error('Error creating project: ', error);
+        }
     });
 }
 
 export function deleteCourse(realm: Realm, course: Course) {
     realm.write(() => {
-        realm.delete(course);
+        try {
+            realm.delete(course);
+        } catch (error) {
+            console.error('Error deleting course: ', error);
+        }
     });
 }
 
 export function deleteProject(realm: Realm, project: Project) {
     realm.write(() => {
-        realm.delete(project);
+        try {
+            realm.delete(project);
+        } catch (error) {
+            console.error('Error deleting project: ', error);
+        }
     });
 }
 
@@ -81,6 +105,10 @@ export function closeRealm(realm: Realm) {
 
 export function clearRealm(realm: Realm) {
     realm.write(() => {
-        realm.deleteAll();
+        try {
+            realm.deleteAll();
+        } catch (error) {
+            console.error('Error clearing realm: ', error);
+        }
     });
 }
