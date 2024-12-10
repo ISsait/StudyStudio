@@ -12,6 +12,7 @@ import {
     closeRealm,
  } from '../data/storage/storageManager';
  import MyButton from '../components/commonComponents/MyButton';
+ import NotificationList from '../components/homeComponents/NotificationList';
 
  async function testStorage() {
     console.log("Testing Storage");
@@ -31,6 +32,7 @@ export default function HomePage () : React.JSX.Element {
                 console.log("Button Pressed");
                 testStorage();
                 }} />
+            <NotificationList />
             <CalendarComponent />
         </View>
     );

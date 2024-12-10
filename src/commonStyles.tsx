@@ -1,6 +1,7 @@
 import {
     StyleSheet,
 } from 'react-native';
+import NotificationList from './components/homeComponents/NotificationList';
 
 export const commonStyles = StyleSheet.create({
     // Common styles for all components
@@ -70,5 +71,8 @@ export const commonStyles = StyleSheet.create({
         padding: 10,
         margin: 10,
         borderRadius: 5,
+    },
+    notificationList: {
+        margin: 10,
     },
 });

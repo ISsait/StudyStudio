@@ -6,22 +6,21 @@ import {
 } from 'react-native';
 import { commonStyles } from '../../commonStyles';
 
-export default function NotificationCard({projectId, navigation} : {projectId : any, navigation : any}) : React.JSX.Element {
+export default function NotificationCard({project, navigation} : {project : any, navigation : any}) : React.JSX.Element {
 
-    const bgColor = 'blue';
-
+   
     return (
         <TouchableOpacity style={[
             commonStyles.notificationCard,
-            {backgroundColor: bgColor},
+            {backgroundColor: project.bgColor},
             ]}
             onPress={ () => {
-                navigation.navigate('Project', {projectId: projectId});
+                navigation.navigate('Project', {projectId: project.projectId});
                 }}
             >
             <View>
                 {/* <Text style={{fontSize: 20}}>{course.courseName}</Text> */}
-                <Text style={{fontSize: 18}}>{projectId}</Text>
+                <Text style={{fontSize: 18}}>{project.projectId}</Text>
             </View>
             {/* <Text style={{fontSize: 18}}>{project.endDate}</Text> */}
         </TouchableOpacity>
