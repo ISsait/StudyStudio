@@ -17,7 +17,13 @@ async function getAllProjects() {
     let projects = getProjects(realm)?.toJSON();
     if (projects) {
         // Convert Realm objects to array of JSON objects
-        const projectsArray = projects.map((project : any) => project.toJSON());
+        // console.log("Projects: ", projects);
+        const projectsArray = projects.map((project: any) => {
+            return {
+                projectId: project._id,
+                projectName: project.projectName,
+                endDate: project.endDate,
+        }});
         closeRealm(realm);
         return projectsArray;
     } else {
@@ -32,13 +38,13 @@ export default function NotificationList({ navigation }: { navigation: any }): R
     useEffect(() => {
         async function fetchProjects() {
             const projectsData = await getAllProjects();
+            // console.log("Projects: ", projectsData);
             setProjects(projectsData);
         }
         fetchProjects();
     }, []);
 
     return (
-        <ScrollView style={commonStyles.notificationList}>
             <FlatList
                 data={projects}
                 renderItem={({ item }) => (
@@ -46,6 +52,5 @@ export default function NotificationList({ navigation }: { navigation: any }): R
                 )}
                 keyExtractor={item => item.projectId}
             />
-        </ScrollView>
     );
 }

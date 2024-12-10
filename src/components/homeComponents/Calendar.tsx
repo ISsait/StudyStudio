@@ -31,7 +31,7 @@ export default function CalendarComponent () : React.JSX.Element {
                 disableAllTouchEventsForDisabledDays={true}
                 enableSwipeMonths={false}
                 markedDates={{}}
-                showSixWeeks={true}
+                showSixWeeks={false}
                 allowSelectionOutOfRange={true}
                 theme={{
                     backgroundColor: '#ffffff',

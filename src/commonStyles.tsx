@@ -71,6 +71,8 @@ export const commonStyles = StyleSheet.create({
         padding: 10,
         margin: 10,
         borderRadius: 5,
+        borderWidth: 1,
+        justifyContent: 'space-between',
     },
     notificationList: {
         margin: 10,

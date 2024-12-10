@@ -5,23 +5,26 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { commonStyles } from '../../commonStyles';
+import { Project } from '../../utility';
 
-export default function NotificationCard({project, navigation} : {project : any, navigation : any}) : React.JSX.Element {
+export default function NotificationCard({project, navigation} : {project : Project, navigation : any}) : React.JSX.Element {
 
-   
+    console.log("Project: ", project);
+    // parse endDate to a readable format with month and day
+    const endDate = new Date(project.endDate).toISOString().split('T')[0];
     return (
         <TouchableOpacity style={[
             commonStyles.notificationCard,
-            {backgroundColor: project.bgColor},
             ]}
             onPress={ () => {
-                navigation.navigate('Project', {projectId: project.projectId});
+                navigation.navigate('Project', {projectId: project._id});
                 }}
             >
             <View>
                 {/* <Text style={{fontSize: 20}}>{course.courseName}</Text> */}
-                <Text style={{fontSize: 18}}>{project.projectId}</Text>
+                <Text style={{fontSize: 18}}>{project.projectName}</Text>
             </View>
+            <Text style={{fontSize: 18}}>{endDate}</Text>
             {/* <Text style={{fontSize: 18}}>{project.endDate}</Text> */}
         </TouchableOpacity>
     );
