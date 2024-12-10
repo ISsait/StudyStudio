@@ -1,7 +1,6 @@
 import {
     StyleSheet,
 } from 'react-native';
-import NotificationList from './components/homeComponents/NotificationList';
 
 export const commonStyles = StyleSheet.create({
     // Common styles for all components
