@@ -120,10 +120,10 @@ async function writeMockDataToRealm() {
         return;
     }
     mockData.courses.forEach((course) => {
-        createCourse(realm, course);
+        createCourse(course);
     });
     mockData.projects.forEach((project) => {
-        createProject(realm, project);
+        createProject(project);
     });
     closeRealm(realm);
 }

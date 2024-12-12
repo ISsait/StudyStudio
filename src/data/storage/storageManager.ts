@@ -8,23 +8,38 @@ export async function getRealm() {
     });
 }
 
-export function getCourses(realm: Realm) {
+export function closeRealm(realm : Realm) {
+    if (!realm.isClosed) {
+        realm.close();
+    }
+}
+
+export async function getCourses() {
+    const realm = await getRealm();
     try {
         return realm.objects('Course');
     } catch (error) {
         console.error('Error getting courses: ', error);
     }
+    if (!realm.isClosed) {
+        realm.close();
+    }
 }
 
-export function getProjects(realm: Realm) {
+export async function getProjects() {
+    const realm = await getRealm();
     try {
         return realm.objects('Project');
     } catch (error) {
         console.error('Error getting projects: ', error);
     }
+    if (!realm.isClosed) {
+        realm.close();
+    }
 }
 
-export function createCourse(realm: Realm, course: Course) {
+export async function createCourse(course: Course) {
+    const realm = await getRealm();
     realm.write(() => {
         try {
             realm.create('Course', course);
@@ -32,9 +47,13 @@ export function createCourse(realm: Realm, course: Course) {
             console.error('Error creating course: ', error);
         }
     });
+    if (!realm.isClosed) {
+        realm.close();
+    }
 }
 
-export function createProject(realm: Realm, project: Project) {
+export async function createProject(project: Project) {
+    const realm = await getRealm();
     realm.write(() => {
         try {
             realm.create('Project', project);
@@ -42,9 +61,13 @@ export function createProject(realm: Realm, project: Project) {
             console.error('Error creating project: ', error);
         }
     });
+    if (!realm.isClosed) {
+        realm.close();
+    }
 }
 
-export function deleteCourse(realm: Realm, course: Course) {
+export async function deleteCourse(course: Course) {
+    const realm = await getRealm();
     realm.write(() => {
         try {
             realm.delete(course);
@@ -52,9 +75,13 @@ export function deleteCourse(realm: Realm, course: Course) {
             console.error('Error deleting course: ', error);
         }
     });
+    if (!realm.isClosed) {
+        realm.close();
+    }
 }
 
-export function deleteProject(realm: Realm, project: Project) {
+export async function deleteProject(project: Project) {
+    const realm = await getRealm();
     realm.write(() => {
         try {
             realm.delete(project);
@@ -62,9 +89,13 @@ export function deleteProject(realm: Realm, project: Project) {
             console.error('Error deleting project: ', error);
         }
     });
+    if (!realm.isClosed) {
+        realm.close();
+    }
 }
 
-export function updateCourse(realm: Realm, course: Course, newCourse: Course) {
+export async function updateCourse(course: Course, newCourse: Course) {
+    const realm = await getRealm();
     try {
         realm.write(() => {
             course.courseName = newCourse.courseName;
@@ -79,9 +110,13 @@ export function updateCourse(realm: Realm, course: Course, newCourse: Course) {
     } catch (error) {
         console.error('Error updating course: ', error);
     }
+    if (!realm.isClosed) {
+        realm.close();
+    }
 }
 
-export function updateProject(realm: Realm, project: Project, newProject: Project) {
+export async function updateProject(project: Project, newProject: Project) {
+    const realm = await getRealm();
     try {
         realm.write(() => {
             project.projectName = newProject.projectName;
@@ -95,15 +130,14 @@ export function updateProject(realm: Realm, project: Project, newProject: Projec
     } catch (error) {
         console.error('Error updating project: ', error);
     }
-}
-
-export function closeRealm(realm: Realm) {
     if (!realm.isClosed) {
         realm.close();
     }
 }
 
-export function clearRealm(realm: Realm) {
+
+export async function clearRealm() {
+    const realm = await getRealm();
     realm.write(() => {
         try {
             realm.deleteAll();
@@ -111,4 +145,7 @@ export function clearRealm(realm: Realm) {
             console.error('Error clearing realm: ', error);
         }
     });
+    if (!realm.isClosed) {
+        realm.close();
+    }
 }

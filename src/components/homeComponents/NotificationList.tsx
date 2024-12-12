@@ -1,56 +1,65 @@
 import React from 'react';
 import {
     FlatList,
-    ScrollView,
 } from 'react-native';
-import { commonStyles } from '../../commonStyles';
 import NotificationCard from './NotificationCard';
 import {
-    getRealm,
     getProjects,
-    closeRealm,
+    getCourses,
 } from '../../data/storage/storageManager';
 import { useState, useEffect } from 'react';
 
 async function getAllProjects() {
-    const realm = await getRealm();
-    let projects = getProjects(realm)?.toJSON();
+    let projects = await getProjects();
+    let courses = await getCourses();
     if (projects) {
-        // Convert Realm objects to array of JSON objects
-        // console.log("Projects: ", projects);
-        const projectsArray = projects.map((project: any) => {
-            return {
-                projectId: project._id,
-                projectName: project.projectName,
-                endDate: project.endDate,
-        }});
-        closeRealm(realm);
-        return projectsArray;
+        return [projects, courses];
     } else {
-        closeRealm(realm);
         return [];
     }
 }
 
 export default function NotificationList({ navigation }: { navigation: any }): React.JSX.Element {
     const [projects, setProjects] = useState<any[]>([]);
+    const [courses, setCourses] = useState<any[]>([]);
 
     useEffect(() => {
         async function fetchProjects() {
-            const projectsData = await getAllProjects();
-            // console.log("Projects: ", projectsData);
-            setProjects(projectsData);
+            const data = await getAllProjects();
+            const projectData = data[0];
+            const courseData = data[1];
+            if (projectData) {
+                setProjects([...projectData]);
+            }
+            if (courseData) {
+                setCourses([...courseData]);
+            }
         }
         fetchProjects();
     }, []);
 
+    const cardData = projects.map((project: any) => {
+        const courseId = project.courseId;
+        const course = courses?.filter((course: any) => String(course._id) === String(courseId));
+        const color = course[0]?.color;
+        const courseName = course[0]?.courseName;
+        return {
+            _id: project._id,
+            projectName: project.projectName,
+            endDate: project.endDate,
+            color: color,
+            courseName: courseName,
+        };
+    });
+
     return (
             <FlatList
-                data={projects}
+                data={cardData}
                 renderItem={({ item }) => (
                     <NotificationCard project={item} navigation={navigation} />
                 )}
-                keyExtractor={item => item.projectId}
+                keyExtractor={(item) => item._id}
             />
+
     );
 }

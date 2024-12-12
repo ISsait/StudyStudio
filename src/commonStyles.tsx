@@ -69,11 +69,8 @@ export const commonStyles = StyleSheet.create({
         flexDirection: 'row',
         padding: 10,
         margin: 10,
-        borderRadius: 5,
+        borderRadius: 15,
         borderWidth: 1,
         justifyContent: 'space-between',
-    },
-    notificationList: {
-        margin: 10,
     },
 });
