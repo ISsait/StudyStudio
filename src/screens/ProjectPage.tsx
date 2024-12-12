@@ -6,20 +6,16 @@ import {
 import { commonStyles } from '../commonStyles';
 import { Project } from '../utility';
 import { useState, useEffect } from 'react';
-import { getRealm, getProjects, closeRealm } from '../data/storage/storageManager';
+import { getProjects } from '../data/storage/storageManager';
+import { useRoute } from '@react-navigation/native';
 
 async function getProjectData(projectId: string) {
-    const realm = await getRealm();
-    let projects = getProjects(realm)?.toJSON();
+    let projects = await getProjects();
     if (projects) {
-        const project = projects.filter((project: any) => {
-            return project._id === projectId;
-        });
-        closeRealm(realm);
-        return project;
+        const projectData = projects?.find((project: Project) => String(project._id) === projectId);
+        return projectData;
     } else {
-        closeRealm(realm);
-        return [];
+        return null;
     }
 }
 
@@ -28,11 +24,19 @@ async function handleSetProject(projectId: string, setProject: any) {
     setProject(projectData);
 }
 
-export default function ProjectPage ({route, navigation} : {route : any, navigation: any}) : React.JSX.Element {
-    
+export default function ProjectPage () : React.JSX.Element {
     const [project, setProject] = useState<Project | null>(null);
-    // const { projectId } = route.params;
-    // const projectData = getProjectData(projectId);
+    const route = useRoute();
+    console.log('page params', route);
+
+    useEffect(() => {
+        const {projectId} = {...route.params};
+        handleSetProject(projectId, setProject);
+        return () => {
+            console.log('cleanup', projectId);
+        };
+    }, [route.params]);
+
     return (
         <View style={commonStyles.body}>
             <Text style={{fontSize: 18}}>Project Page</Text>

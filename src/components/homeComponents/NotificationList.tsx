@@ -44,7 +44,7 @@ export default function NotificationList({ navigation }: { navigation: any }): R
         const color = course[0]?.color;
         const courseName = course[0]?.courseName;
         return {
-            _id: project._id,
+            _id: String(project._id),
             projectName: project.projectName,
             endDate: project.endDate,
             color: color,

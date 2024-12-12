@@ -36,17 +36,14 @@ function ParentTabNav() : React.JSX.Element {
               <Tab.Screen
                 name="Home"
                 component={HomeStackNav}
-                initialParams={{allCourseIds}}
               />
               <Tab.Screen
                 name="Courses"
                 component={CourseStackNav}
-                initialParams={{allCourseIds}}
               />
               <Tab.Screen
                 name="Projects"
                 component={ProjectStackNav}
-                initialParams={{allProjectIds}}
               />
             </Tab.Navigator>
         </NavigationContainer>
