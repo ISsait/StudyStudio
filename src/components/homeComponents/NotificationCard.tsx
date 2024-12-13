@@ -16,7 +16,7 @@ export default function NotificationCard({project, navigation} : {project : any,
             {backgroundColor: project.color},
             ]}
             onPress={ () => {
-                navigation.navigate('Projects', {projectId: String(project._id)});
+                navigation.navigate('Projects', {screen : 'View Projects', params : {projectId : project._id}});
                 }}
             >
                 <View>

@@ -48,7 +48,7 @@ export const commonStyles = StyleSheet.create({
         flex: 1,
         fontSize: 16,
         color: 'black',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
     },
 
     // Components

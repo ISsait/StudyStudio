@@ -6,7 +6,6 @@ import { commonStyles } from '../commonStyles';
 const Stack = createNativeStackNavigator();
 
 function ProjectStackNav({route, navigation} : {route : any, navigation : any}) : React.JSX.Element {
-    console.log('stack params', route.params ? route.params : 'no params');
     return (
         <Stack.Navigator>
             <Stack.Screen
@@ -17,7 +16,7 @@ function ProjectStackNav({route, navigation} : {route : any, navigation : any}) 
                     headerTransparent: true,
                     contentStyle: commonStyles.stackContent,
                 }}
-                initialParams={route.params}
+                initialParams={{projectId : null}}
             />
         </Stack.Navigator>
     );
