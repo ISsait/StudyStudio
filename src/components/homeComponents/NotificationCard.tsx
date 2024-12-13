@@ -1,28 +1,57 @@
 import React from 'react';
-import {
-    View,
-    Text,
-    TouchableOpacity,
-} from 'react-native';
-import { commonStyles } from '../../commonStyles';
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+// import {commonStyles} from '../../commonStyles';
 
-export default function NotificationCard({project, navigation} : {project : any, navigation : any}) : React.JSX.Element {
-    // parse endDate to a readable format with month and day
-    const endDate = new Date(project.endDate).toISOString().split('T')[0];
-    return (
-        <TouchableOpacity style={[
-            commonStyles.notificationCard,
-            {backgroundColor: project.color},
-            ]}
-            onPress={ () => {
-                navigation.navigate('Projects', {projectId: project._id});
-                }}
-            >
-                <View>
-                    <Text style={{fontSize: 18, fontWeight: '600'}}>{project.courseName}</Text>
-                    <Text style={{fontSize: 18}}>{project.projectName}</Text>
-                </View>
-            <Text style={{fontSize: 18, textAlignVertical: 'bottom'}}>{endDate}</Text>
-        </TouchableOpacity>
-    );
+interface NotificationProject {
+  _id: string;
+  projectName: string;
+  endDate: Date;
+  color: string;
+  courseName: string;
 }
+
+interface NotificationCardProps {
+  project: NotificationProject;
+  navigation: any;
+}
+
+export default function NotificationCard({
+  project,
+  navigation,
+}: NotificationCardProps): React.JSX.Element {
+  return (
+    <TouchableOpacity
+      style={[styles.card, {backgroundColor: project.color || '#fff'}]}
+      onPress={() => navigation.navigate('Projects', {projectId: project._id})}>
+      <View>
+        <Text style={styles.courseName}>{project.courseName}</Text>
+        <Text style={styles.projectName}>{project.projectName}</Text>
+        <Text style={styles.date}>
+          Due: {project.endDate.toLocaleDateString()}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: {
+    padding: 16,
+    margin: 8,
+    borderRadius: 8,
+    elevation: 2,
+  },
+  courseName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  projectName: {
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  date: {
+    fontSize: 12,
+    color: '#666',
+  },
+});
