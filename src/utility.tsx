@@ -1,4 +1,5 @@
 import {ReactNode} from 'react';
+import Realm from 'realm';
 
 // List of colors for courses
 export enum CourseColors {

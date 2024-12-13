@@ -16,6 +16,7 @@ import {commonStyles} from '../commonStyles';
 import {createProject, deleteProject} from '../data/storage/storageManager';
 import {Project} from '../utility';
 import Realm from 'realm';
+import MyButton from '../components/commonComponents/MyButton';
 
 const AddProjectForm = ({onSubmit}: {onSubmit: (project: Project) => void}) => {
   const [projectName, setProjectName] = useState('');
@@ -266,7 +267,10 @@ export default function ProjectPage({route}: any): React.JSX.Element {
   return (
     <View style={commonStyles.body}>
       {showAddForm ? (
-        <AddProjectForm onSubmit={handleAddProject} />
+        <View>
+            <AddProjectForm onSubmit={handleAddProject} />
+            <MyButton title="Cancel" onPress={() => setShowAddForm(false)} />
+        </View>
       ) : (
         <ViewProjectsForm
           projects={projects}

@@ -20,7 +20,7 @@ function MyButton(params : MyButtonParams) : React.JSX.Element {
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: 'blue',
+        backgroundColor: '#1976D2',
         padding: 10,
         borderRadius: 5,
         width: 200,
