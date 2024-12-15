@@ -145,13 +145,13 @@ async function writeMockDataToRealm() {
     closeRealm(realm);
     return;
   }
+  closeRealm(realm);
   mockData.courses.forEach(course => {
     createCourse(course);
   });
   mockData.projects.forEach(project => {
     createProject(project);
   });
-  closeRealm(realm);
 }
 
 writeMockDataToRealm();
