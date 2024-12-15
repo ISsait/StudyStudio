@@ -22,8 +22,32 @@ export async function getCourses() {
     console.error('Error getting courses: ', error);
   }
   if (!realm.isClosed) {
-    realm.close();
+      realm.close();
+    }
+}
+
+export async function getCourseById(courseId: Realm.BSON.ObjectId) {
+  const realm = await getRealm();
+  try {
+    return realm.objectForPrimaryKey('Course', courseId);
+  } catch (error) {
+    console.error('Error getting course by ID: ', error);
   }
+  if (!realm.isClosed) {
+      realm.close();
+    }
+}
+
+export async function getProjectById(projectId: Realm.BSON.ObjectId) {
+  const realm = await getRealm();
+  try {
+    return realm.objectForPrimaryKey('Project', projectId);
+  } catch (error) {
+    console.error('Error getting project by ID: ', error);
+  }
+  if (!realm.isClosed) {
+      realm.close();
+    }
 }
 
 export async function getProjects() {
@@ -34,8 +58,8 @@ export async function getProjects() {
     console.error('Error getting projects: ', error);
   }
   if (!realm.isClosed) {
-    realm.close();
-  }
+      realm.close();
+    }
 }
 
 export async function createCourse(course: Course) {
@@ -46,10 +70,10 @@ export async function createCourse(course: Course) {
     } catch (error) {
       console.error('Error creating course: ', error);
     }
+    if (!realm.isClosed) {
+        realm.close();
+      }
   });
-  if (!realm.isClosed) {
-    realm.close();
-  }
 }
 
 export async function createProject(project: Project) {
@@ -60,10 +84,10 @@ export async function createProject(project: Project) {
     } catch (error) {
       console.error('Error creating project: ', error);
     }
+    if (!realm.isClosed) {
+        realm.close();
+      }
   });
-  if (!realm.isClosed) {
-    realm.close();
-  }
 }
 
 export async function deleteCourse(course: Course) {
@@ -137,8 +161,8 @@ export async function updateCourse(course: Course, newCourse: Course) {
     console.error('Error updating course: ', error);
   }
   if (!realm.isClosed) {
-    realm.close();
-  }
+      realm.close();
+    }
 }
 
 export async function updateProject(project: Project, newProject: Project) {
@@ -157,8 +181,8 @@ export async function updateProject(project: Project, newProject: Project) {
     console.error('Error updating project: ', error);
   }
   if (!realm.isClosed) {
-    realm.close();
-  }
+      realm.close();
+    }
 }
 
 export async function clearRealm() {
@@ -169,8 +193,8 @@ export async function clearRealm() {
     } catch (error) {
       console.error('Error clearing realm: ', error);
     }
+    if (!realm.isClosed) {
+        realm.close();
+      }
   });
-  if (!realm.isClosed) {
-    realm.close();
-  }
 }
