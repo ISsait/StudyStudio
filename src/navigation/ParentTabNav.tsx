@@ -28,9 +28,9 @@ function ParentTabNav(): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = async () => {
-    let realm: Realm | null = null;
+    // let realm: Realm | null = null;
     try {
-      realm = await getRealm();
+      // realm = await getRealm();
 
       const coursesResults = await getCourses();
       const projectsResults = await getProjects();
@@ -74,9 +74,9 @@ function ParentTabNav(): React.JSX.Element {
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
-      if (realm) {
-        closeRealm(realm);
-      }
+      // if (realm) {
+      //   closeRealm(realm);
+      // }
       setIsLoading(false);
     }
   };
