@@ -20,11 +20,10 @@ export async function getCourses() {
     return realm.objects('Course');
   } catch (error) {
     console.error('Error getting courses: ', error);
-  } finally {
-      if (!realm.isClosed) {
+  }
+  if (!realm.isClosed) {
       realm.close();
     }
-  }
 }
 
 export async function getCourseById(courseId: Realm.BSON.ObjectId) {
@@ -33,11 +32,10 @@ export async function getCourseById(courseId: Realm.BSON.ObjectId) {
     return realm.objectForPrimaryKey('Course', courseId);
   } catch (error) {
     console.error('Error getting course by ID: ', error);
-  } finally {
-      if (!realm.isClosed) {
+  }
+  if (!realm.isClosed) {
       realm.close();
     }
-  }
 }
 
 export async function getProjectById(projectId: Realm.BSON.ObjectId) {
@@ -46,11 +44,10 @@ export async function getProjectById(projectId: Realm.BSON.ObjectId) {
     return realm.objectForPrimaryKey('Project', projectId);
   } catch (error) {
     console.error('Error getting project by ID: ', error);
-  } finally {
-      if (!realm.isClosed) {
+  }
+  if (!realm.isClosed) {
       realm.close();
     }
-  }
 }
 
 export async function getProjects() {
@@ -59,11 +56,10 @@ export async function getProjects() {
     return realm.objects('Project');
   } catch (error) {
     console.error('Error getting projects: ', error);
-  } finally {
-      if (!realm.isClosed) {
+  }
+  if (!realm.isClosed) {
       realm.close();
     }
-  }
 }
 
 export async function createCourse(course: Course) {
@@ -73,11 +69,10 @@ export async function createCourse(course: Course) {
       realm.create('Course', course);
     } catch (error) {
       console.error('Error creating course: ', error);
-    } finally {
-        if (!realm.isClosed) {
+    }
+    if (!realm.isClosed) {
         realm.close();
       }
-    }
   });
 }
 
@@ -88,11 +83,10 @@ export async function createProject(project: Project) {
       realm.create('Project', project);
     } catch (error) {
       console.error('Error creating project: ', error);
-    } finally {
-        if (!realm.isClosed) {
+    }
+    if (!realm.isClosed) {
         realm.close();
       }
-    }
   });
 }
 
@@ -165,11 +159,10 @@ export async function updateCourse(course: Course, newCourse: Course) {
     });
   } catch (error) {
     console.error('Error updating course: ', error);
-  } finally {
-      if (!realm.isClosed) {
+  }
+  if (!realm.isClosed) {
       realm.close();
     }
-  }
 }
 
 export async function updateProject(project: Project, newProject: Project) {
@@ -186,11 +179,10 @@ export async function updateProject(project: Project, newProject: Project) {
     });
   } catch (error) {
     console.error('Error updating project: ', error);
-  } finally {
-      if (!realm.isClosed) {
+  }
+  if (!realm.isClosed) {
       realm.close();
     }
-  }
 }
 
 export async function clearRealm() {
@@ -200,10 +192,9 @@ export async function clearRealm() {
       realm.deleteAll();
     } catch (error) {
       console.error('Error clearing realm: ', error);
-    } finally {
-        if (!realm.isClosed) {
+    }
+    if (!realm.isClosed) {
         realm.close();
       }
-    }
   });
 }
