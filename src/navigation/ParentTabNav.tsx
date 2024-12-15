@@ -32,8 +32,8 @@ function ParentTabNav(): React.JSX.Element {
     try {
       realm = await getRealm();
 
-      const coursesResults = await getCourses();
-      const projectsResults = await getProjects();
+      const coursesResults = await getCourses(realm);
+      const projectsResults = await getProjects(realm);
 
       if (coursesResults) {
         const detachedCourses = Array.from(coursesResults).map(course => {

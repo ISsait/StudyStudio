@@ -9,7 +9,7 @@ import {
   createProject,
 } from '../data/storage/storageManager';
 
-export const mockCourses = [
+const mockCourses = [
   {
     id: new ObjectId('67439d532e13f4ae80324f31'),
     courseName: 'Object Oriented Programming',
@@ -45,7 +45,7 @@ export const mockCourses = [
   },
 ];
 
-export const mockProjects = [
+const mockProjects = [
   {
     id: new ObjectId('67439d562e13f4ae80324f34'),
     projectName: 'OOP Project 1',
@@ -129,7 +129,7 @@ function instantiateProjects() {
   return projects;
 }
 
-export const mockData = {
+const mockData = {
   courses: instantiateCourses(),
   projects: instantiateProjects(),
 };
@@ -152,6 +152,7 @@ async function writeMockDataToRealm() {
   mockData.projects.forEach(project => {
     createProject(project);
   });
+  console.log('Mock data written to Realm');
 }
 
 writeMockDataToRealm();
