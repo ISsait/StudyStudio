@@ -22,12 +22,12 @@ interface DueDates {
 }
 
 interface CalendarComponentProps {
-    dueDates: DueDates;
+    dueDates: DueDates | Record<string, {color: string, name: string}[]>;
 }
 
 export default function CalendarComponent({ dueDates }: CalendarComponentProps): React.JSX.Element {
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
-    const [selectedProjects, setSelectedProjects] = useState<Project[]>([]);
+    const [selectedProjects, setSelectedProjects] = useState<{color: string, name: string}[] | Project[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
 
     const currentDate = new Date();
