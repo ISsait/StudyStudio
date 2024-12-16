@@ -11,6 +11,7 @@ export async function getRealm() {
 export function closeRealm(realm: Realm) {
   if (!realm.isClosed) {
     realm.close();
+    console.log('Realm closed');
   }
 }
 
@@ -46,30 +47,34 @@ export async function getProjectById(realm : Realm, projectId: Realm.BSON.Object
   }
 }
 
-export async function createCourse(course: Course) {
-  const realm = await getRealm();
-  realm.write(() => {
-    try {
+export async function createCourse(course: Course, realm?: Realm ) {
+  if (!realm) {
+    realm = await getRealm();
+  }
+  try {
+    realm.write(() => {
       realm.create('Course', course);
-    } catch (error) {
-      console.error('Error creating course: ', error);
-    } finally {
-        closeRealm(realm);
-    }
-  });
+    });
+  } catch (error) {
+    console.error('Error creating course: ', error);
+    throw error;
+  }
+  closeRealm(realm);
 }
 
-export async function createProject(project: Project) {
-  const realm = await getRealm();
-  realm.write(() => {
-    try {
+export async function createProject(project: Project, realm?: Realm) {
+  if (!realm) {
+    realm = await getRealm();
+  }
+  try {
+    realm.write(() => {
       realm.create('Project', project);
-    } catch (error) {
-      console.error('Error creating project: ', error);
-    } finally {
-        closeRealm(realm);
-    }
-  });
+    });
+  } catch (error) {
+    console.error('Error creating project: ', error);
+    throw error;
+  }
+  closeRealm(realm);
 }
 
 export async function deleteCourse(course: Course) {
@@ -171,14 +176,15 @@ export async function updateProject(project: Project, newProject: Project) {
 
 export async function clearRealm() {
   const realm = await getRealm();
-  realm.write(() => {
-    try {
+  try {
+    realm.write(() => {
       realm.deleteAll();
-    } catch (error) {
-      console.error('Error clearing realm: ', error);
-    }
-    if (!realm.isClosed) {
-        realm.close();
-      }
-  });
+    });
+    console.log('Realm cleared');
+  } catch (error) {
+    console.error('Error clearing realm: ', error);
+    throw error;
+  } finally {
+    closeRealm(realm);
+  }
 }

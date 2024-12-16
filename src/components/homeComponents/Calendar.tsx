@@ -9,6 +9,7 @@ import {
     FlatList,
     Button,
 } from 'react-native';
+import { commonStyles } from '../../commonStyles';
 
 interface Project {
     color: string;
@@ -30,6 +31,9 @@ export default function CalendarComponent({ dueDates }: CalendarComponentProps):
     const [modalVisible, setModalVisible] = useState(false);
 
     const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    const lastDay = new Date(currentYear, currentMonth + 1, 0);
 
     const handleDayPress = (date: string) => {
         if (dueDates[date]) {
@@ -67,10 +71,12 @@ export default function CalendarComponent({ dueDates }: CalendarComponentProps):
     return (
         <View style={{ flex: 1 }}>
             <Calendar
-                style={{ margin: 10 }}
+                style={commonStyles.calendar}
                 current={currentDate.toISOString().split('T')[0]}
+                minDate={`${currentYear}-${currentMonth + 1}-1`}
+                maxDate={`${currentYear}-${currentMonth + 1}-${lastDay.getDate()}`}
                 dayComponent={renderDay}
-                onDayPress={(day: any) => console.log('selected day', day)}
+                onDayPress={(day : any) => {console.log('selected day', day);}}
             />
 
             <Modal
