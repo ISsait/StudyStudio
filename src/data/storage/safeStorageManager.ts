@@ -2,7 +2,6 @@ import Realm from 'realm';
 import {Course, Project} from '../../utility';
 
 export async function getRealm() {
-    console.log('Opening Realm');
   return await Realm.open({
     schema: [Course.courseSchema, Project.projectSchema],
     schemaVersion: 1,
@@ -21,7 +20,6 @@ const detachFromRealm = <T extends object>(realmObject: T): T => {
 
 export async function getSafeCourses() {
     const realm = await getRealm();
-    console.log('Realm', realm);
     try {
         const realmCourses = realm.objects('Course');
         const courses = Array.from(realmCourses).map(course => {

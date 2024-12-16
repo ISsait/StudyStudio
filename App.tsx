@@ -11,7 +11,7 @@ import { commonStyles } from './src/commonStyles';
 import { writeMockDataToRealm } from './src/data/mockData';
 import { RealmProvider } from './src/realmContextProvider';
 
-writeMockDataToRealm();
+// writeMockDataToRealm();
 
 export default function App() : React.JSX.Element {
   return (
