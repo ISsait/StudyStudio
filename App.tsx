@@ -10,8 +10,6 @@ import Header from './src/components/commonComponents/Header';
 import { commonStyles } from './src/commonStyles';
 import { RealmProvider } from './src/realmContextProvider';
 
-// writeMockDataToRealm();
-
 export default function App() : React.JSX.Element {
   return (
     <ImageBackground source={require('./src/assets/backgroundImg.jpg')} style={commonStyles.backgroundImg}>

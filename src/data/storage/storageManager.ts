@@ -47,11 +47,7 @@ export async function getProjectById(realm : Realm, projectId: Realm.BSON.Object
   }
 }
 
-export async function createCourse(course: Course, realm?: Realm ) {
-  const realmFlag = realm ? true : false;
-  if (!realm) {
-    realm = await getRealm();
-  }
+export async function createCourse(course: Course, realm: Realm ) {
   try {
     realm.write(() => {
       realm.create('Course', course);
@@ -60,16 +56,9 @@ export async function createCourse(course: Course, realm?: Realm ) {
     console.error('Error creating course: ', error);
     throw error;
   }
-  if (!realmFlag) {
-    closeRealm(realm);
-  }
 }
 
-export async function createProject(project: Project, realm?: Realm) {
-  const realmFlag = realm ? true : false;
-  if (!realm) {
-    realm = await getRealm();
-  }
+export async function createProject(project: Project, realm: Realm) {
   try {
     realm.write(() => {
       realm.create('Project', project);
@@ -77,9 +66,6 @@ export async function createProject(project: Project, realm?: Realm) {
   } catch (error) {
     console.error('Error creating project: ', error);
     throw error;
-  }
-  if (!realmFlag) {
-    closeRealm(realm);
   }
 }
 
