@@ -70,7 +70,8 @@ export const commonStyles = StyleSheet.create({
         padding: 10,
         margin: 10,
         borderRadius: 15,
-        borderWidth: 1,
         justifyContent: 'space-between',
+        backgroundColor: '#fff',
+        elevation: 2,
     },
 });
