@@ -14,7 +14,7 @@ import {
 import DatePicker from '@react-native-community/datetimepicker';
 import {commonStyles} from '../commonStyles';
 import {createProject, deleteProject} from '../data/storage/storageManager';
-import {Project} from '../utility';
+import {Course, Project} from '../utility';
 import Realm from 'realm';
 import MyButton from '../components/commonComponents/MyButton';
 import { useRealm } from '../realmContextProvider';
@@ -207,7 +207,8 @@ export default function ProjectPage(): React.JSX.Element {
   // const {projects = [], refreshData = () => {}} = route?.params || {};
   const [showAddForm, setShowAddForm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [projects, setLocalProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
 
   const realm = useRealm();
   useEffect(() => {
@@ -217,10 +218,11 @@ export default function ProjectPage(): React.JSX.Element {
     }
 
     const projectsResults = realm.objects('Project');
+    const coursesResults = realm.objects('Course');
 
     const updateProjects = () => {
       console.log('Projects updated');
-      const detachedProjects = Array.from(projectsResults).map(project => {
+      const detachedProjects = Array.from(projectsResults).map((project) => {
         const detached = detachFromRealm(project) as unknown as Project;
         return new Project(
           detached.projectName,
@@ -232,20 +234,43 @@ export default function ProjectPage(): React.JSX.Element {
           detached.courseId
             ? new Realm.BSON.ObjectId(detached.courseId.toString())
             : undefined,
-          new Realm.BSON.ObjectId(detached._id.toString()),
+          new Realm.BSON.ObjectId(detached._id.toString())
         );
       });
-      setLocalProjects(detachedProjects);
+      setProjects(detachedProjects);
     };
 
-    // Fetch initial projects and attach a listener
+    const updateCourses = () => {
+      console.log('Courses updated');
+      const detachedCourses = Array.from(coursesResults).map((course) => {
+        const detached = detachFromRealm(course) as unknown as Course;
+        return new Course(
+          detached.courseName,
+          detached.courseCode,
+          detached.instructor,
+          detached.color,
+          new Date(detached.startDate),
+          new Date(detached.endDate),
+          detached.notes,
+          detached.projectIds,
+          new Realm.BSON.ObjectId(detached._id.toString())
+        );
+      });
+      setCourses(detachedCourses);
+    };
+
+    // Fetch initial projects and attach listeners
     updateProjects();
+    updateCourses();
     projectsResults.addListener(updateProjects);
+    coursesResults.addListener(updateCourses);
 
     return () => {
-      console.log('Cleaning up projects');
+      console.log('Cleaning up projects and courses');
       projectsResults.removeListener(updateProjects);
-      setLocalProjects([]); // Clear local state on cleanup
+      coursesResults.removeListener(updateCourses);
+      setProjects([]); // Clear state on cleanup
+      setCourses([]);
     };
   }, [realm]);
 
@@ -299,7 +324,7 @@ export default function ProjectPage(): React.JSX.Element {
         projectId: project._id.toString(),
       });
       Alert.alert('Error', 'Failed to delete project');
-      setLocalProjects(projects);
+      setProjects(projects);
     } finally {
       setIsDeleting(false);
     }
