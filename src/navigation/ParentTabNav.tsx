@@ -14,13 +14,17 @@ import {
   getCourses,
   getProjects,
 } from '../data/storage/storageManager';
+import {
+  getSafeCourses,
+  getSafeProjects,
+} from '../data/storage/safeStorageManager';
 
 const Tab = createMaterialTopTabNavigator();
 
-// Helper to detach Realm objects
-const detachFromRealm = <T extends object>(realmObject: T): T => {
-  return JSON.parse(JSON.stringify(realmObject));
-};
+// // Helper to detach Realm objects
+// const detachFromRealm = <T extends object>(realmObject: T): T => {
+//   return JSON.parse(JSON.stringify(realmObject));
+// };
 
 function ParentTabNav(): React.JSX.Element {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -28,55 +32,55 @@ function ParentTabNav(): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = async () => {
-    let realm: Realm | null = null;
+    // let realm: Realm | null = null;
     try {
-      realm = await getRealm();
+      // realm = await getRealm();
 
-      const coursesResults = await getCourses(realm);
-      const projectsResults = await getProjects(realm);
+      const coursesResults = await getSafeCourses();
+      const projectsResults = await getSafeProjects();
 
       if (coursesResults) {
-        const detachedCourses = Array.from(coursesResults).map(course => {
-          const detached = detachFromRealm(course) as unknown as Course;
-          return new Course(
-            detached.courseName,
-            detached.courseCode,
-            detached.instructor,
-            detached.color,
-            new Date(detached.startDate),
-            new Date(detached.endDate),
-            detached.notes,
-            detached.projectIds,
-            new Realm.BSON.ObjectId(detached._id.toString()),
-          );
-        });
-        setCourses(detachedCourses);
+        // const detachedCourses = Array.from(coursesResults).map(course => {
+        //   const detached = detachFromRealm(course) as unknown as Course;
+        //   return new Course(
+        //     detached.courseName,
+        //     detached.courseCode,
+        //     detached.instructor,
+        //     detached.color,
+        //     new Date(detached.startDate),
+        //     new Date(detached.endDate),
+        //     detached.notes,
+        //     detached.projectIds,
+        //     new Realm.BSON.ObjectId(detached._id.toString()),
+        //   );
+        // });
+        setCourses(coursesResults);
       }
 
       if (projectsResults) {
-        const detachedProjects = Array.from(projectsResults).map(project => {
-          const detached = detachFromRealm(project) as unknown as Project;
-          return new Project(
-            detached.projectName,
-            detached.estimatedHrs,
-            new Date(detached.startDate),
-            new Date(detached.endDate),
-            detached.completed,
-            detached.notes,
-            detached.courseId
-              ? new Realm.BSON.ObjectId(detached.courseId.toString())
-              : undefined,
-            new Realm.BSON.ObjectId(detached._id.toString()),
-          );
-        });
-        setProjects(detachedProjects);
+        // const detachedProjects = Array.from(projectsResults).map(project => {
+        //   const detached = detachFromRealm(project) as unknown as Project;
+        //   return new Project(
+        //     detached.projectName,
+        //     detached.estimatedHrs,
+        //     new Date(detached.startDate),
+        //     new Date(detached.endDate),
+        //     detached.completed,
+        //     detached.notes,
+        //     detached.courseId
+        //       ? new Realm.BSON.ObjectId(detached.courseId.toString())
+        //       : undefined,
+        //     new Realm.BSON.ObjectId(detached._id.toString()),
+        //   );
+        // });
+        setProjects(projectsResults);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
-      if (realm) {
-        closeRealm(realm);
-      }
+      // if (realm) {
+      //   closeRealm(realm);
+      // }
       setIsLoading(false);
     }
   };

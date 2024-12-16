@@ -9,6 +9,12 @@ import {
   createProject,
 } from '../data/storage/storageManager';
 
+try {
+  console.log('Running mockData.ts');
+} catch (error) {
+  console.error('Error running mockData.ts: ', error);
+}
+
 const mockCourses = [
   {
     id: new ObjectId('67439d532e13f4ae80324f31'),
@@ -135,7 +141,7 @@ const mockData = {
 };
 
 // write mock data to realm
-async function writeMockDataToRealm() {
+export async function writeMockDataToRealm() {
   const realm = await getRealm();
   if (
     realm.objects('Course').length > 0 ||
@@ -155,4 +161,3 @@ async function writeMockDataToRealm() {
   console.log('Mock data written to Realm');
 }
 
-writeMockDataToRealm();

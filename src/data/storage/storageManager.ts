@@ -44,9 +44,6 @@ export async function getProjectById(realm : Realm, projectId: Realm.BSON.Object
   } catch (error) {
     console.error('Error getting project by ID: ', error);
   }
-  if (!realm.isClosed) {
-      realm.close();
-    }
 }
 
 export async function createCourse(course: Course) {

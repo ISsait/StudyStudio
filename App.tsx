@@ -8,6 +8,9 @@ import {
 import ParentTabNav from './src/navigation/ParentTabNav';
 import Header from './src/components/commonComponents/Header';
 import { commonStyles } from './src/commonStyles';
+import { writeMockDataToRealm } from './src/data/mockData';
+
+writeMockDataToRealm();
 
 export default function App() : React.JSX.Element {
   return (
