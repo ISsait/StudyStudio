@@ -13,7 +13,7 @@ function ProjectStackNav({route}: any): React.JSX.Element {
       <Stack.Screen
         name="View Projects"
         component={ProjectPage}
-        initialParams={route.params}
+        initialParams={{projectId: null}}
         options={{
           headerTitleStyle: commonStyles.stackHeaderText,
           headerTransparent: true,

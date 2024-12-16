@@ -203,8 +203,11 @@ const detachFromRealm = <T extends object>(realmObject: T): T => {
   return JSON.parse(JSON.stringify(realmObject));
 };
 
-export default function ProjectPage(): React.JSX.Element {
-  // const {projects = [], refreshData = () => {}} = route?.params || {};
+export default function ProjectPage({route} : {route : any}): React.JSX.Element {
+  const {projectId} = route?.params.projectId;
+
+  console.log('ProjectPage route params:', projectId);
+
   const [showAddForm, setShowAddForm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
