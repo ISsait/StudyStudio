@@ -14,7 +14,7 @@ import { commonStyles } from '../../commonStyles';
 interface Project {
     color: string;
     name: string;
-    time: string;
+    endDate: string;
 }
 
 interface DueDates {
@@ -46,7 +46,11 @@ export default function CalendarComponent({ dueDates }: CalendarComponentProps):
     const renderDay = ({ date, state }: any) => {
         const formattedDate = date.dateString;
         const projects = dueDates[formattedDate] || [];
-        const textColor = state === 'disabled' ? '#d9e1e8' : '#2d4150';
+        const textColor = state === 'disabled' ? '#d9e1e8' : '#808080'; // Darker Gray for non-current days
+
+        // Highlight current date in black
+        const isToday = formattedDate === currentDate.toISOString().split('T')[0];
+        const dayTextColor = isToday ? '#000000' : textColor; // Black for today, Darker Gray for others
 
         return (
             <TouchableOpacity onPress={() => handleDayPress(formattedDate)}>
@@ -62,21 +66,23 @@ export default function CalendarComponent({ dueDates }: CalendarComponentProps):
                             />
                         ))}
                     </View>
-                    <Text style={[styles.dateText, { color: textColor }]}>{date.day}</Text>
+                    <Text style={[styles.dateText, { color: dayTextColor }]}>{date.day}</Text>
                 </View>
             </TouchableOpacity>
         );
     };
 
+    const currentDateString = currentDate.toISOString().split('T')[0];
+
     return (
         <View>
             <Calendar
                 style={commonStyles.calendar}
-                current={currentDate.toISOString().split('T')[0]}
+                current={currentDateString}
                 minDate={`${currentYear}-${currentMonth + 1}-1`}
                 maxDate={`${currentYear}-${currentMonth + 1}-${lastDay.getDate()}`}
                 dayComponent={renderDay}
-                onDayPress={(day : any) => {console.log('selected day', day);}}
+                onDayPress={(day: any) => console.log('selected day', day)}
             />
 
             <Modal
@@ -101,9 +107,7 @@ export default function CalendarComponent({ dueDates }: CalendarComponentProps):
                                             { backgroundColor: item.color },
                                         ]}
                                     />
-                                    <Text style={styles.projectText}>
-                                        {item.name} - {item.time}
-                                    </Text>
+                                    <Text style={styles.projectText}>{item.name}</Text>
                                 </View>
                             )}
                         />
