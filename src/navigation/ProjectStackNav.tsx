@@ -6,7 +6,7 @@ import {commonStyles} from '../commonStyles';
 const Stack = createNativeStackNavigator();
 
 function ProjectStackNav({route}: any): React.JSX.Element {
-  console.log('ProjectStackNav params:', route.params);
+  // console.log('ProjectStackNav params:', route.params);
 
   return (
     <Stack.Navigator>

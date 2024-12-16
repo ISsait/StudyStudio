@@ -141,14 +141,14 @@ const mockData = {
 };
 
 // write mock data to realm
-export async function writeMockDataToRealm() {
-  const realm = await getRealm();
+export async function writeMockDataToRealm(realm : Realm) {
+  // const realm = await getRealm();
   if (
     realm.objects('Course').length > 0 ||
     realm.objects('Project').length > 0
   ) {
     console.log('Data already exists in Realm');
-    closeRealm(realm);
+    // closeRealm(realm);
     return;
   }
   mockData.courses.forEach(course =>{
@@ -157,9 +157,9 @@ export async function writeMockDataToRealm() {
   mockData.projects.forEach(project => {
     createProject(project, realm);
   });
-  if (!realm.isClosed){
-    closeRealm(realm);
-  }
+  // if (!realm.isClosed){
+  //   closeRealm(realm);
+  // }
   console.log('Mock data written to Realm');
 }
 

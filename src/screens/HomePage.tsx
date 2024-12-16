@@ -20,22 +20,23 @@ const dueDates = {
 
 
 export default function HomePage(): React.JSX.Element {
-  const realm = useRealm();
   const navigation = useNavigation();
 
+  const realm = useRealm();
   useEffect(() => {
-    if (!realm) {
-      console.log('Realm not loaded');
+    if (!realm || realm.isClosed) {
+      console.log('Realm not loaded or closed');
       return;
-    } else {
-      const courses = realm.objects('Course');
-      console.log('useEffect HomePage', courses);
     }
+
+    const courses = realm.objects('Course');
+    console.log('useEffect HomePage', courses);
+
     return () => {
       console.log('cleanup HomePage');
     };
-  }
-  , [realm]);
+  }, [realm]);
+
 
   return (
     <View style={commonStyles.body}>

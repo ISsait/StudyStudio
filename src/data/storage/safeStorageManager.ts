@@ -10,6 +10,7 @@ export async function getRealm() {
 
 export function closeRealm(realm: Realm) {
   if (!realm.isClosed) {
+    console.log('Realm closed from safe storage manager');
     realm.close();
   }
 }
@@ -41,7 +42,7 @@ export async function getSafeCourses() {
         console.error('Error getting courses: ', error);
         throw error;
     } finally {
-        closeRealm(realm);
+        // closeRealm(realm);
     }
 }
 
@@ -68,6 +69,6 @@ export async function getSafeProjects () {
     } catch (error) {
         console.error('Error getting projects: ', error);
     } finally {
-        closeRealm(realm);
+        // closeRealm(realm);
     }
 }

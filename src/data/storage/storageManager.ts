@@ -11,7 +11,7 @@ export async function getRealm() {
 export function closeRealm(realm: Realm) {
   if (!realm.isClosed) {
     realm.close();
-    console.log('Realm closed');
+    console.log('Realm closed from storage manager');
   }
 }
 
@@ -110,8 +110,7 @@ export async function deleteCourse(course: Course) {
   }
 }
 
-export async function deleteProject(project: Project) {
-  const realm = await getRealm();
+export async function deleteProject(project: Project, realm : Realm) {
   try {
     console.log(
       'Attempting to delete project with ID:',
@@ -130,10 +129,6 @@ export async function deleteProject(project: Project) {
   } catch (error) {
     console.error('Error in deleteProject:', error);
     throw error;
-  } finally {
-    if (!realm.isClosed) {
-      realm.close();
-    }
   }
 }
 
@@ -180,8 +175,7 @@ export async function updateProject(project: Project, newProject: Project) {
     }
 }
 
-export async function clearRealm() {
-  const realm = await getRealm();
+export async function clearRealm(realm : Realm) {
   try {
     realm.write(() => {
       realm.deleteAll();
@@ -190,7 +184,5 @@ export async function clearRealm() {
   } catch (error) {
     console.error('Error clearing realm: ', error);
     throw error;
-  } finally {
-    closeRealm(realm);
   }
 }

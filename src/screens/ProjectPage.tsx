@@ -17,6 +17,7 @@ import {createProject, deleteProject} from '../data/storage/storageManager';
 import {Project} from '../utility';
 import Realm from 'realm';
 import MyButton from '../components/commonComponents/MyButton';
+import { useRealm } from '../realmContextProvider';
 
 const AddProjectForm = ({onSubmit}: {onSubmit: (project: Project) => void}) => {
   const [projectName, setProjectName] = useState('');
@@ -197,21 +198,62 @@ const ViewProjectsForm = ({
   );
 };
 
-export default function ProjectPage({route}: any): React.JSX.Element {
-  const {projects = [], refreshData = () => {}} = route?.params || {};
+// Helper to detach Realm objects
+const detachFromRealm = <T extends object>(realmObject: T): T => {
+  return JSON.parse(JSON.stringify(realmObject));
+};
+
+export default function ProjectPage(): React.JSX.Element {
+  // const {projects = [], refreshData = () => {}} = route?.params || {};
   const [showAddForm, setShowAddForm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [, setLocalProjects] = useState(projects);
+  const [projects, setLocalProjects] = useState<Project[]>([]);
 
+  const realm = useRealm();
   useEffect(() => {
-    setLocalProjects(projects);
-  }, [projects]);
+    if (!realm || realm.isClosed) {
+      console.error('Realm not available');
+      return;
+    }
+
+    const projectsResults = realm.objects('Project');
+
+    const updateProjects = () => {
+      console.log('Projects updated');
+      const detachedProjects = Array.from(projectsResults).map(project => {
+        const detached = detachFromRealm(project) as unknown as Project;
+        return new Project(
+          detached.projectName,
+          detached.estimatedHrs,
+          new Date(detached.startDate),
+          new Date(detached.endDate),
+          detached.completed,
+          detached.notes,
+          detached.courseId
+            ? new Realm.BSON.ObjectId(detached.courseId.toString())
+            : undefined,
+          new Realm.BSON.ObjectId(detached._id.toString()),
+        );
+      });
+      setLocalProjects(detachedProjects);
+    };
+
+    // Fetch initial projects and attach a listener
+    updateProjects();
+    projectsResults.addListener(updateProjects);
+
+    return () => {
+      console.log('Cleaning up projects');
+      projectsResults.removeListener(updateProjects);
+      setLocalProjects([]); // Clear local state on cleanup
+    };
+  }, [realm]);
 
   const handleAddProject = async (project: Project) => {
     try {
-      await createProject(project);
+      await createProject(project, realm);
+      console.log('Project created successfully', project);
       setShowAddForm(false);
-      refreshData();
     } catch (error) {
       console.error('Error creating project:', error);
       Alert.alert('Error', 'Failed to create project');
@@ -249,9 +291,8 @@ export default function ProjectPage({route}: any): React.JSX.Element {
         objectId,
       );
 
-      await deleteProject(projectToDelete);
+      await deleteProject(projectToDelete, realm);
       console.log('Project deleted successfully');
-      await refreshData();
     } catch (error) {
       console.error('Error deleting project:', {
         error,

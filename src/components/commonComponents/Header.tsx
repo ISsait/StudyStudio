@@ -12,20 +12,23 @@ import {
 import {
     writeMockDataToRealm,
 } from '../../data/mockData';
+import { useRealm } from '../../realmContextProvider';
+import Realm from 'realm';
 
-async function clearAndWriteMockDataToRealm() {
-    await clearRealm();
-    await writeMockDataToRealm();
+async function clearAndWriteMockDataToRealm(realm : Realm) {
+    await clearRealm(realm);
+    await writeMockDataToRealm(realm);
 }
 
 export default function Header () : React.JSX.Element {
+    const realm = useRealm();
     return (
         <View style={commonStyles.headerView}>
             <Text style={commonStyles.headerText}>Study Studio</Text>
             <TouchableOpacity
                 onPress={() => {
                     console.log('Profile Icon Pressed');
-                    clearAndWriteMockDataToRealm();
+                    clearAndWriteMockDataToRealm(realm);
                 }}
             >
                 <Image
