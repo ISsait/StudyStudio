@@ -15,7 +15,7 @@ import {
 
 async function clearAndWriteMockDataToRealm() {
     await clearRealm();
-    // await writeMockDataToRealm();
+    await writeMockDataToRealm();
 }
 
 export default function Header () : React.JSX.Element {

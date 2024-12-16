@@ -1,7 +1,7 @@
 import Realm from 'realm';
 import React from 'react';
 import { getRealm, closeRealm } from './data/storage/storageManager';
-import { View } from 'react-native';
+import { Text } from 'react-native';
 
 // Realm context
 export const RealmContext = React.createContext<Realm | null>(null);
@@ -49,4 +49,4 @@ export const RealmProvider = ({ children }: { children: React.ReactNode }) => {
 };
 
 // Example loading component
-const LoadingComponent = () => <View>Loading...</View>;
+const LoadingComponent = () => <Text>Loading...</Text>;

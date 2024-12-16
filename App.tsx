@@ -9,6 +9,7 @@ import ParentTabNav from './src/navigation/ParentTabNav';
 import Header from './src/components/commonComponents/Header';
 import { commonStyles } from './src/commonStyles';
 import { writeMockDataToRealm } from './src/data/mockData';
+import { RealmProvider } from './src/realmContextProvider';
 
 writeMockDataToRealm();
 
@@ -16,8 +17,10 @@ export default function App() : React.JSX.Element {
   return (
     <ImageBackground source={require('./src/assets/backgroundImg.jpg')} style={commonStyles.backgroundImg}>
       <SafeAreaView style={commonStyles.safeAreaView}>
-        <Header/>
-        <ParentTabNav/>
+        <RealmProvider>
+          <Header/>
+          <ParentTabNav/>
+        </RealmProvider>
       </SafeAreaView>
     </ImageBackground>
   );
