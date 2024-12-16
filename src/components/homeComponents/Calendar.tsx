@@ -69,7 +69,7 @@ export default function CalendarComponent({ dueDates }: CalendarComponentProps):
     };
 
     return (
-        <View style={{ flex: 1 }}>
+        <View>
             <Calendar
                 style={commonStyles.calendar}
                 current={currentDate.toISOString().split('T')[0]}
