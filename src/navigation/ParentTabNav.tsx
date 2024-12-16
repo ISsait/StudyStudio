@@ -84,11 +84,6 @@ function ParentTabNav(): React.JSX.Element {
     };
   }, [realm]);
 
-  // const params = {
-  //   courses,
-  //   projects,
-  // };
-
   if (isLoading) {
     return (
       <View>
@@ -103,17 +98,14 @@ function ParentTabNav(): React.JSX.Element {
         <Tab.Screen
           name="Home"
           component={HomeStackNav}
-          // initialParams={params}
         />
         <Tab.Screen
           name="Courses"
           component={CourseStackNav}
-          // initialParams={params}
         />
         <Tab.Screen
           name="Projects"
           component={ProjectStackNav}
-          // initialParams={params}
         />
       </Tab.Navigator>
     </NavigationContainer>
