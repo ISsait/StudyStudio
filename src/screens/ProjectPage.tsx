@@ -418,8 +418,20 @@ export default function ProjectPage({
   useEffect(() => {
     const projectIdBSON = new Realm.BSON.ObjectId(route.params.projectId);
     const project = realm?.objectForPrimaryKey('Project', projectIdBSON);
-    async function updateProjectById() {
-      const detachedProject = project ? detachFromRealm(project) : null;
+    const updateProjectById = async () => {
+      let detachedProject = project ? detachFromRealm(project) : null;
+      detachedProject = new Project(
+        detachedProject.projectName,
+        detachedProject.estimatedHrs,
+        new Date(detachedProject.startDate),
+        new Date(detachedProject.endDate),
+        detachedProject.completed,
+        detachedProject.notes,
+        detachedProject.courseId
+          ? new Realm.BSON.ObjectId(detachedProject.courseId.toString())
+          : undefined,
+        new Realm.BSON.ObjectId(detachedProject._id.toString()),
+      );
       setProjectById(detachedProject);
     }
     updateProjectById();
