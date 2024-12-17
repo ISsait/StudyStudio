@@ -114,33 +114,27 @@ const AddCourseForm = ({
         style={[styles.input, errors.courseName && styles.inputError]}
         value={courseName}
         onChangeText={setCourseName}
-        placeholder="Course Name"
+        placeholder={errors.courseName ? 'Project name is required' : 'Project Name'} // Dynamic placeholder
+        placeholderTextColor={errors.courseName ? 'red' : 'gray'} // Set placeholder color to red if there's an error
       />
-      {errors.courseName && (
-        <Text style={styles.errorText}>Course name is required</Text>
-      )}
 
       <Text style={styles.label}>Course Code *</Text>
       <TextInput
         style={[styles.input, errors.courseCode && styles.inputError]}
         value={courseCode}
         onChangeText={setCourseCode}
-        placeholder="Course Code"
+        placeholder={errors.courseCode ? 'Course code is required' : 'Course Code'} // Dynamic placeholder
+        placeholderTextColor={errors.courseCode ? 'red' : 'gray'} // Set placeholder color to red if there's an error
       />
-      {errors.courseCode && (
-        <Text style={styles.errorText}>Course code is required</Text>
-      )}
 
       <Text style={styles.label}>Instructor *</Text>
       <TextInput
         style={[styles.input, errors.instructor && styles.inputError]}
         value={instructor}
         onChangeText={setInstructor}
-        placeholder="Instructor Name"
+        placeholder={errors.instructor ? 'Instructor name is required' : 'Instructor Name'} // Dynamic placeholder
+        placeholderTextColor={errors.instructor ? 'red' : 'gray'} // Set placeholder color to red if there's an error
       />
-      {errors.instructor && (
-        <Text style={styles.errorText}>Instructor name is required</Text>
-      )}
 
       <View style={styles.dateContainer}>
         <View>
@@ -230,10 +224,10 @@ const AddCourseForm = ({
         ]}
         value={notes}
         onChangeText={setNotes}
-        placeholder="Notes"
+        placeholder={errors.notes ? 'Notes are required' : 'Notes'} // Dynamic placeholder
+        placeholderTextColor={errors.notes ? 'red' : 'gray'} // Set placeholder color to red if there's an error
         multiline
       />
-      {errors.notes && <Text style={styles.errorText}>Notes are required</Text>}
 
       <View style={styles.buttonContainer}>
               <Button title="Add Project" onPress={handleSubmit} />
