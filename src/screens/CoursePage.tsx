@@ -18,7 +18,7 @@ import {
   deleteCourse,
   getCourses,
 } from '../data/storage/storageManager';
-import {Course, CourseColors} from '../utility';
+import {Course, CourseColors, Project} from '../utility';
 import Realm from 'realm';
 import {useRealm} from '../realmContextProvider';
 import {
@@ -298,41 +298,104 @@ export default function CoursePage({
   const realm = useRealm();
   const [showAddForm, setShowAddForm] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    if (!realm || realm.isClosed) {
-      return;
-    }
-
-    const fetchData = async () => {
-      try {
-        const coursesResults = await getCourses(realm);
-
-        if (coursesResults) {
-          const detachedCourses = Array.from(coursesResults).map(course => {
-            const detached = detachFromRealm(course) as unknown as Course;
-            return new Course(
-              detached.courseName,
-              detached.courseCode,
-              detached.instructor,
-              detached.color,
-              new Date(detached.startDate),
-              new Date(detached.endDate),
-              detached.notes,
-              detached.projectIds,
-              detached._id,
-            );
-          });
-          setCourses(detachedCourses);
-        }
-      } catch (error) {
-        console.error('Error fetching courses:', error);
+      if (!realm || realm.isClosed) {
+        console.error('Realm not available');
+        return;
       }
-    };
 
-    fetchData();
-  }, [realm]);
+      const projectsResults = realm.objects<
+        Realm.Object & {
+          projectName: string;
+          estimatedHrs: number;
+          startDate: Date;
+          endDate: Date;
+          completed: boolean;
+          notes: string;
+          courseId?: Realm.BSON.ObjectId;
+          _id: Realm.BSON.ObjectId;
+        }
+      >('Project');
+
+      const coursesResults = realm.objects<
+        Realm.Object & {
+          courseName: string;
+          courseCode: string;
+          instructor: string;
+          color: string;
+          startDate: Date;
+          endDate: Date;
+          notes: string;
+          projectIds: Realm.BSON.ObjectId[];
+          _id: Realm.BSON.ObjectId;
+        }
+      >('Course');
+
+      const updateProjects = () => {
+        console.log('Projects updated');
+        const detachedProjects = Array.from(projectsResults).map(project => {
+          const detached = detachFromRealm(project) as unknown as {
+            projectName: string;
+            estimatedHrs: number;
+            startDate: Date;
+            endDate: Date;
+            completed: boolean;
+            notes: string;
+            courseId?: Realm.BSON.ObjectId;
+            _id: Realm.BSON.ObjectId;
+          };
+          return new Project(
+            detached.projectName,
+            detached.estimatedHrs,
+            new Date(detached.startDate),
+            new Date(detached.endDate),
+            detached.completed,
+            detached.notes,
+            detached.courseId
+              ? new Realm.BSON.ObjectId(detached.courseId.toString())
+              : undefined,
+            new Realm.BSON.ObjectId(detached._id.toString()),
+          );
+        });
+        setProjects(detachedProjects);
+      };
+
+      const updateCourses = () => {
+        console.log('Courses updated');
+        const detachedCourses = Array.from(coursesResults).map(course => {
+          const detached = detachFromRealm(course);
+          return new Course(
+            detached.courseName,
+            detached.courseCode,
+            detached.instructor,
+            detached.color as CourseColors,
+            new Date(detached.startDate),
+            new Date(detached.endDate),
+            detached.notes,
+            detached.projectIds.map(id => new Realm.BSON.ObjectId(id.toString())),
+            new Realm.BSON.ObjectId(detached._id.toString()),
+          );
+        });
+        setCourses(detachedCourses);
+      };
+
+      // Fetch initial projects and attach listeners
+      updateProjects();
+      updateCourses();
+      projectsResults.addListener(updateProjects);
+      coursesResults.addListener(updateCourses);
+
+      return () => {
+        console.log('Cleaning up projects and courses');
+        projectsResults.removeListener(updateProjects);
+        coursesResults.removeListener(updateCourses);
+        setProjects([]); // Clear state on cleanup
+        setCourses([]);
+      };
+    }, [realm]);
 
   const handleAddCourse = async (course: Course) => {
     try {

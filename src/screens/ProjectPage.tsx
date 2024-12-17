@@ -490,9 +490,6 @@ useEffect(() => {
   };
 }, [route.params, realm]);
 
-
-  console.log('Project:', projectById);
-
   // Fetch projects and courses from Realm and listen for changes
   useEffect(() => {
     if (!realm || realm.isClosed) {
