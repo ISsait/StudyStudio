@@ -68,7 +68,6 @@ export default function HomePage(): React.JSX.Element {
       setCourses(detachedCourses);
     };
 
-    // Fetch initial projects and attach listeners
     updateProjects();
     updateCourses();
     projectsResults.addListener(updateProjects);
@@ -78,22 +77,27 @@ export default function HomePage(): React.JSX.Element {
       console.log('Cleaning up projects and courses');
       projectsResults.removeListener(updateProjects);
       coursesResults.removeListener(updateCourses);
-      setProjects([]); // Clear state on cleanup
+      setProjects([]);
       setCourses([]);
     };
   }, [realm]);
 
-  // Memoize dueDates to avoid unnecessary recomputations
   const dueDates = useMemo(() => {
     const courseColorMap = courses.reduce((map, course) => {
       map[course._id.toString()] = course.color;
       return map;
     }, {} as Record<string, string>);
 
+    const currentDate = new Date();
+
     return projects.reduce((acc, project) => {
       const { endDate, projectName, courseId } = project;
-      const dateKey = endDate.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
-      const color = courseColorMap[courseId?.toString() || ''];
+      const dateKey = endDate.toISOString().split('T')[0];
+      const courseColor = courseColorMap[courseId?.toString() || ''];
+
+      const isPastDue = endDate < currentDate;
+
+      const color = isPastDue ? 'darkred' : courseColor;
 
       if (!acc[dateKey]) {
         acc[dateKey] = [];

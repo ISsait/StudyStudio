@@ -46,11 +46,9 @@ export default function CalendarComponent({ dueDates }: CalendarComponentProps):
     const renderDay = ({ date, state }: any) => {
         const formattedDate = date.dateString;
         const projects = dueDates[formattedDate] || [];
-        const textColor = state === 'disabled' ? '#d9e1e8' : '#808080'; // Darker Gray for non-current days
-
-        // Highlight current date in black
+        const textColor = state === 'disabled' ? '#d9e1e8' : '#808080';
         const isToday = formattedDate === currentDate.toISOString().split('T')[0];
-        const dayTextColor = isToday ? '#000000' : textColor; // Black for today, Darker Gray for others
+        const dayTextColor = isToday ? '#000000' : textColor; 
 
         return (
             <TouchableOpacity onPress={() => handleDayPress(formattedDate)}>

@@ -3,9 +3,9 @@ import {FlatList} from 'react-native';
 import NotificationCard from './NotificationCard';
 import {useState, useEffect} from 'react';
 import {useRealm} from '../../realmContextProvider';
+import Realm from 'realm';
 import {Course, Project} from '../../utility';
 
-// Helper to detach Realm objects
 const detachFromRealm = <T extends object>(realmObject: T): T => {
   return JSON.parse(JSON.stringify(realmObject));
 };
@@ -21,61 +21,63 @@ export default function NotificationList({
   const realm = useRealm();
   useEffect(() => {
     if (!realm || realm.isClosed) {
+      console.error('Realm not available');
       return;
     }
 
-    console.log('Setting up NotificationList listeners');
     const projectsResults = realm.objects('Project');
     const coursesResults = realm.objects('Course');
 
-    const updateData = () => {
-      try {
-        console.log('Updating data in NotificationList');
-        const detachedProjects = Array.from(projectsResults).map(project => {
-          const detached = detachFromRealm(project) as unknown as Project;
-          return new Project(
-            detached.projectName,
-            detached.estimatedHrs,
-            new Date(detached.startDate),
-            new Date(detached.endDate),
-            detached.completed,
-            detached.notes,
-            detached.courseId ?? undefined,
-            detached._id,
-          );
-        });
-        setProjects(detachedProjects);
-
-        const detachedCourses = Array.from(coursesResults).map(course => {
-          const detached = detachFromRealm(course) as unknown as Course;
-          return new Course(
-            detached.courseName,
-            detached.courseCode,
-            detached.instructor,
-            detached.color,
-            new Date(detached.startDate),
-            new Date(detached.endDate),
-            detached.notes,
-            detached.projectIds,
-            detached._id,
-          );
-        });
-        setCourses(detachedCourses);
-      } catch (error) {
-        console.error('Error updating data:', error);
-      }
+    const updateProjects = () => {
+      console.log('Projects updated');
+      const detachedProjects = Array.from(projectsResults).map(project => {
+        const detached = detachFromRealm(project) as unknown as Project;
+        return new Project(
+          detached.projectName,
+          detached.estimatedHrs,
+          new Date(detached.startDate),
+          new Date(detached.endDate),
+          detached.completed,
+          detached.notes,
+          detached.courseId
+            ? new Realm.BSON.ObjectId(detached.courseId.toString())
+            : undefined,
+          new Realm.BSON.ObjectId(detached._id.toString()),
+        );
+      });
+      setProjects(detachedProjects);
     };
 
-    updateData();
-    projectsResults.addListener(updateData);
-    coursesResults.addListener(updateData);
+    const updateCourses = () => {
+      console.log('Courses updated');
+      const detachedCourses = Array.from(coursesResults).map(course => {
+        const detached = detachFromRealm(course) as unknown as Course;
+        return new Course(
+          detached.courseName,
+          detached.courseCode,
+          detached.instructor,
+          detached.color,
+          new Date(detached.startDate),
+          new Date(detached.endDate),
+          detached.notes,
+          detached.projectIds,
+          new Realm.BSON.ObjectId(detached._id.toString()),
+        );
+      });
+      setCourses(detachedCourses);
+    };
+    // Fetch initial projects and attach a listener
+    updateProjects();
+    updateCourses();
+    projectsResults.addListener(updateProjects);
+    coursesResults.addListener(updateCourses);
 
     return () => {
-      console.log('Cleaning up NotificationList listeners');
-      if (!realm.isClosed) {
-        projectsResults.removeListener(updateData);
-        coursesResults.removeListener(updateData);
-      }
+      console.log('Cleaning up projects');
+      projectsResults.removeListener(updateProjects);
+      coursesResults.removeListener(updateCourses);
+      setProjects([]); // Clear local state on cleanup
+      setCourses([]); // Clear local state on cleanup
     };
   }, [realm]);
 
