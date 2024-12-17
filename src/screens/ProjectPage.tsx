@@ -397,30 +397,6 @@ const detachFromRealm = <T extends object>(realmObject: T): T => {
   return JSON.parse(JSON.stringify(realmObject));
 };
 
-async function getProjectData(
-  projectId: string | Realm.BSON.ObjectID,
-  realm: Realm,
-) {
-  try {
-    projectId = new Realm.BSON.ObjectId(projectId);
-    let project = await getProjectById(realm, projectId);
-    return project;
-  } catch (error) {
-    console.error('Error fetching project data:', error);
-    return null;
-  }
-}
-
-async function handleSetProject(
-  projectId: string,
-  setProject: any,
-  realm: Realm,
-) {
-  const projectData = await getProjectData(projectId, realm);
-  const project = projectData ? projectData : null;
-  setProject(project);
-}
-
 interface ProjectPageProps {
   route: any;
   navigation: NavigationProp<any>;
@@ -440,12 +416,19 @@ export default function ProjectPage({
   const [projectById, setProjectById] = useState<Project | null>(null);
 
   useEffect(() => {
-    if (route.params.projectId) {
-      handleSetProject(route.params.projectId, setProjectById, realm);
-      console.log('ProjectId:', route.params.projectId);
+    const projectIdBSON = new Realm.BSON.ObjectId(route.params.projectId);
+    const project = realm?.objectForPrimaryKey('Project', projectIdBSON);
+    async function updateProjectById() {
+      const detachedProject = project ? detachFromRealm(project) : null;
+      setProjectById(detachedProject);
     }
+    updateProjectById();
+
+    project?.addListener(updateProject);
+
     return () => {
       console.log('ProjectId cleanup');
+
       setProjectById(null);
     };
   }, [route.params, realm]);
