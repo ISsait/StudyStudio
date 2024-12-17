@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import DatePicker from '@react-native-community/datetimepicker';
 import {commonStyles} from '../commonStyles';
-import {createProject, deleteProject} from '../data/storage/storageManager';
+import {createProject, deleteProject, getProjectById, getProjects} from '../data/storage/storageManager';
 import {Course, Project} from '../utility';
 import Realm from 'realm';
 import MyButton from '../components/commonComponents/MyButton';
@@ -203,17 +203,47 @@ const detachFromRealm = <T extends object>(realmObject: T): T => {
   return JSON.parse(JSON.stringify(realmObject));
 };
 
+async function getProjectData(projectId: string | Realm.BSON.ObjectID, realm: Realm) {
+  try {
+    projectId = new Realm.BSON.ObjectId(projectId);
+    let project = await getProjectById(realm, projectId);
+    return project;
+  } catch (error) {
+    console.error('Error fetching project data:', error);
+    return null;
+  }
+}
+
+async function handleSetProject(projectId: string, setProject: any, realm : Realm) {
+   const projectData = await getProjectData(projectId, realm);
+   const project = projectData ? projectData : null;
+   setProject(project);
+}
+
 export default function ProjectPage({route} : {route : any}): React.JSX.Element {
-  const {projectId} = route?.params.projectId;
-
-  console.log('ProjectPage route params:', projectId);
-
+  const realm = useRealm();
   const [showAddForm, setShowAddForm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
 
-  const realm = useRealm();
+  // projectId passing in as a prop 
+  const [projectById, setProjectById] = useState<Project | null>(null);
+
+  useEffect(() => {
+         if (route.params.projectId){
+             handleSetProject(route.params.projectId, setProjectById, realm);
+             console.log('ProjectId:', route.params.projectId);
+         }
+         return () => {
+             console.log('ProjectId cleanup');
+             setProjectById(null);
+         };
+  }, [route.params, realm]);
+
+  console.log('Project:', projectById);
+
+  // Fetch projects and courses from Realm and listen for changes
   useEffect(() => {
     if (!realm || realm.isClosed) {
       console.error('Realm not available');
