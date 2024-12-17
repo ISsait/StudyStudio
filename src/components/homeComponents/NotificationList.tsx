@@ -5,7 +5,6 @@ import { useRealm } from '../../realmContextProvider';
 import Realm from 'realm';
 import { Course, Project } from '../../utility';
 
-// Helper to detach Realm objects
 const detachFromRealm = <T extends object>(realmObject: T): T => {
   return JSON.parse(JSON.stringify(realmObject));
 };
@@ -64,7 +63,6 @@ export default function NotificationList({ navigation }: { navigation: any }): R
       setCourses(detachedCourses);
     };
 
-    // Fetch initial projects and attach listeners
     updateProjects();
     updateCourses();
     projectsResults.addListener(updateProjects);
@@ -74,12 +72,11 @@ export default function NotificationList({ navigation }: { navigation: any }): R
       console.log('Cleaning up projects');
       projectsResults.removeListener(updateProjects);
       coursesResults.removeListener(updateCourses);
-      setProjects([]); // Clear local state on cleanup
-      setCourses([]); // Clear local state on cleanup
+      setProjects([]); 
+      setCourses([]); 
     };
   }, [realm]);
 
-  // Memoize cardData and apply color changes and sorting
   const cardData = useMemo(() => {
     const currentDate = new Date();
 
@@ -90,7 +87,6 @@ export default function NotificationList({ navigation }: { navigation: any }): R
         const color = course[0]?.color;
         const courseName = course[0]?.courseName;
 
-        // Check if the project is past due
         const isPastDue = project.endDate < currentDate;
         const finalColor = isPastDue ? 'darkred' : color;
 
@@ -102,7 +98,7 @@ export default function NotificationList({ navigation }: { navigation: any }): R
           courseName: courseName,
         };
       })
-      .sort((a, b) => a.endDate.getTime() - b.endDate.getTime()); // Sort by endDate
+      .sort((a, b) => a.endDate.getTime() - b.endDate.getTime());
   }, [projects, courses]);
 
   return (
