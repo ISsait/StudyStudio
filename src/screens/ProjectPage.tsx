@@ -60,7 +60,7 @@ const AddProjectForm = ({
       navigation.setOptions({
         title: 'View Project',
       });
-    }
+    };
   }, [navigation, showAddForm]);
 
   const validateForm = () => {
@@ -233,7 +233,7 @@ const EditProjectForm = ({
       navigation.setOptions({
         title: 'View Project',
       });
-    }
+    };
   }, [navigation, project]);
 
   const validateForm = () => {

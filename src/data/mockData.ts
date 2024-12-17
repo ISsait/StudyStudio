@@ -7,12 +7,6 @@ import {
   createProject,
 } from '../data/storage/storageManager';
 
-try {
-  console.log('Running mockData.ts');
-} catch (error) {
-  console.error('Error running mockData.ts: ', error);
-}
-
 const mockCourses = [
   {
     id: new ObjectId('67439d532e13f4ae80324f31'),
