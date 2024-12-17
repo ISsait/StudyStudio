@@ -16,7 +16,6 @@ import {commonStyles} from '../commonStyles';
 import {
   createProject,
   deleteProject,
-  getProjectById,
   updateProject,
 } from '../data/storage/storageManager';
 import {Course, CourseColors, Project} from '../utility';
@@ -415,12 +414,24 @@ export default function ProjectPage({
   // projectId passing in as a prop
   const [projectById, setProjectById] = useState<Project | null>(null);
 
-  useEffect(() => {
-    const projectIdBSON = new Realm.BSON.ObjectId(route.params.projectId);
-    const project = realm?.objectForPrimaryKey('Project', projectIdBSON);
-    const updateProjectById = async () => {
-      let detachedProject = project ? detachFromRealm(project) : null;
-      detachedProject = new Project(
+useEffect(() => {
+  if (!realm || realm.isClosed) {
+    console.error('Realm not available');
+    return;
+  }
+
+  // Safely create BSON ObjectId
+  const projectIdBSON = new Realm.BSON.ObjectId(route.params.projectId);
+
+  // Fetch the project object by primary key
+  const project = realm.objectForPrimaryKey<Project>('Project', projectIdBSON);
+
+  // Update the local state with a detached project
+  const updateProjectById = () => {
+    if (project) {
+      const detachedProject = detachFromRealm(project) as Project;
+
+      const projectData = new Project(
         detachedProject.projectName,
         detachedProject.estimatedHrs,
         new Date(detachedProject.startDate),
@@ -432,18 +443,31 @@ export default function ProjectPage({
           : undefined,
         new Realm.BSON.ObjectId(detachedProject._id.toString()),
       );
-      setProjectById(detachedProject);
-    }
-    updateProjectById();
 
-    project?.addListener(updateProject);
-
-    return () => {
-      console.log('ProjectId cleanup');
-
+      setProjectById(projectData);
+    } else {
       setProjectById(null);
-    };
-  }, [route.params, realm]);
+    }
+  };
+
+  // Update state immediately
+  updateProjectById();
+
+  // Set up listener for updates to the project
+  const listener = () => {
+    updateProjectById();
+  };
+  project?.addListener(listener);
+
+  // Cleanup function
+  return () => {
+    console.log('ProjectId cleanup');
+    project?.removeListener(listener); // Properly remove listener
+    route.params.projectId = null; // Reset projectId in route params
+    setProjectById(null);
+  };
+}, [route.params, realm]);
+
 
   console.log('Project:', projectById);
 
@@ -558,7 +582,7 @@ export default function ProjectPage({
   const handleUpdateProject = async (updatedProject: Project) => {
     try {
       if (projectById) {
-        await updateProject(projectById, updatedProject);
+        await updateProject(projectById, updatedProject, realm);
         console.log('Project updated successfully');
 
         // Navigate back to Home after successful update

@@ -140,8 +140,7 @@ export async function updateCourse(course: Course, newCourse: Course) {
     }
 }
 
-export async function updateProject(project: Project, newProject: Project) {
-  const realm = await getRealm();
+export async function updateProject(project: Project, newProject: Project, realm : Realm) {
   try {
     realm.write(() => {
       project.projectName = newProject.projectName;
@@ -154,11 +153,7 @@ export async function updateProject(project: Project, newProject: Project) {
     });
   } catch (error) {
     console.error('Error updating project: ', error);
-  } finally {
-      if (!realm.isClosed) {
-          realm.close();
-        }
-    }
+  }
 }
 
 export async function clearRealm(realm : Realm) {
