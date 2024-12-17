@@ -13,13 +13,27 @@ import {
 } from 'react-native';
 import DatePicker from '@react-native-community/datetimepicker';
 import {commonStyles} from '../commonStyles';
-import {createProject, deleteProject, getProjectById, getProjects} from '../data/storage/storageManager';
-import {Course, Project} from '../utility';
+import {
+  createProject,
+  deleteProject,
+  getProjectById,
+  updateProject,
+} from '../data/storage/storageManager';
+import {Course, CourseColors, Project} from '../utility';
 import Realm from 'realm';
 import MyButton from '../components/commonComponents/MyButton';
-import { useRealm } from '../realmContextProvider';
+import {useRealm} from '../realmContextProvider';
+import {Picker} from '@react-native-picker/picker';
+import {NavigationProp} from '@react-navigation/native';
 
-const AddProjectForm = ({onSubmit}: {onSubmit: (project: Project) => void}) => {
+const AddProjectForm = ({
+  onSubmit,
+  courses,
+}: {
+  onSubmit: (project: Project) => void;
+  courses: Course[];
+}) => {
+  const [selectedCourseId, setSelectedCourseId] = useState<string>('');
   const [projectName, setProjectName] = useState('');
   const [estimatedHrs, setEstimatedHrs] = useState('');
   const [startDate, setStartDate] = useState(new Date());
@@ -52,7 +66,9 @@ const AddProjectForm = ({onSubmit}: {onSubmit: (project: Project) => void}) => {
         endDate,
         false,
         notes,
-        undefined,
+        selectedCourseId
+          ? new Realm.BSON.ObjectId(selectedCourseId)
+          : undefined,
         new Realm.BSON.ObjectId(),
       );
       onSubmit(newProject);
@@ -143,7 +159,185 @@ const AddProjectForm = ({onSubmit}: {onSubmit: (project: Project) => void}) => {
       />
       {errors.notes && <Text style={styles.errorText}>Notes are required</Text>}
 
+      <Text style={styles.label}>Course</Text>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={selectedCourseId}
+          onValueChange={itemValue => setSelectedCourseId(itemValue)}
+          style={styles.picker}>
+          <Picker.Item label="Select a course" value="" />
+          {courses.map(course => (
+            <Picker.Item
+              key={course._id.toString()}
+              label={course.courseName}
+              value={course._id.toString()}
+            />
+          ))}
+        </Picker>
+      </View>
+
       <Button title="Add Project" onPress={handleSubmit} />
+    </ScrollView>
+  );
+};
+
+const EditProjectForm = ({
+  project,
+  onSubmit,
+  onCancel,
+  courses,
+}: {
+  project: Project;
+  onSubmit: (project: Project) => void;
+  onCancel: () => void;
+  courses: Course[];
+}) => {
+  const [selectedCourseId, setSelectedCourseId] = useState<string>(
+    project.courseId?.toString() || '',
+  );
+  const [projectName, setProjectName] = useState(project.projectName);
+  const [estimatedHrs, setEstimatedHrs] = useState(
+    project.estimatedHrs.toString(),
+  );
+  const [startDate, setStartDate] = useState(project.startDate);
+  const [endDate, setEndDate] = useState(project.endDate);
+  const [notes, setNotes] = useState(project.notes);
+  const [showStartDate, setShowStartDate] = useState(false);
+  const [showEndDate, setShowEndDate] = useState(false);
+  const [errors, setErrors] = useState({
+    projectName: false,
+    estimatedHrs: false,
+    notes: false,
+  });
+
+  const validateForm = () => {
+    const newErrors = {
+      projectName: projectName.trim() === '',
+      estimatedHrs: estimatedHrs.trim() === '' || isNaN(Number(estimatedHrs)),
+      notes: notes.trim() === '',
+    };
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(error => error);
+  };
+
+  const handleSubmit = () => {
+    if (validateForm()) {
+      const updatedProject = new Project(
+        projectName,
+        Number(estimatedHrs),
+        startDate,
+        endDate,
+        project.completed,
+        notes,
+        selectedCourseId
+          ? new Realm.BSON.ObjectId(selectedCourseId)
+          : undefined,
+        project._id,
+      );
+      onSubmit(updatedProject);
+    }
+  };
+
+  return (
+    <ScrollView style={styles.formContainer}>
+      <Text style={styles.formTitle}>Edit Project</Text>
+
+      <Text style={styles.label}>Project Name *</Text>
+      <TextInput
+        style={[styles.input, errors.projectName && styles.inputError]}
+        value={projectName}
+        onChangeText={setProjectName}
+        placeholder="Project Name"
+      />
+      {errors.projectName && (
+        <Text style={styles.errorText}>Project name is required</Text>
+      )}
+
+      <Text style={styles.label}>Estimated Hours *</Text>
+      <TextInput
+        style={[styles.input, errors.estimatedHrs && styles.inputError]}
+        value={estimatedHrs}
+        onChangeText={setEstimatedHrs}
+        placeholder="Estimated Hours"
+        keyboardType="numeric"
+      />
+      {errors.estimatedHrs && (
+        <Text style={styles.errorText}>Valid number of hours required</Text>
+      )}
+
+      <Text style={styles.label}>Start Date</Text>
+      <TouchableOpacity
+        style={styles.dateButton}
+        onPress={() => setShowStartDate(true)}>
+        <Text>{startDate.toLocaleDateString()}</Text>
+      </TouchableOpacity>
+      {showStartDate && (
+        <DatePicker
+          value={startDate}
+          onChange={(event, date) => {
+            setShowStartDate(Platform.OS === 'ios');
+            if (date) {
+              setStartDate(date);
+            }
+          }}
+          mode="date"
+        />
+      )}
+
+      <Text style={styles.label}>End Date</Text>
+      <TouchableOpacity
+        style={styles.dateButton}
+        onPress={() => setShowEndDate(true)}>
+        <Text>{endDate.toLocaleDateString()}</Text>
+      </TouchableOpacity>
+      {showEndDate && (
+        <DatePicker
+          value={endDate}
+          onChange={(event, date) => {
+            setShowEndDate(Platform.OS === 'ios');
+            if (date) {
+              setEndDate(date);
+            }
+          }}
+          mode="date"
+        />
+      )}
+
+      <Text style={styles.label}>Notes *</Text>
+      <TextInput
+        style={[
+          styles.input,
+          styles.notesInput,
+          errors.notes && styles.inputError,
+        ]}
+        value={notes}
+        onChangeText={setNotes}
+        placeholder="Notes"
+        multiline
+      />
+      {errors.notes && <Text style={styles.errorText}>Notes are required</Text>}
+
+      <Text style={styles.label}>Course</Text>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={selectedCourseId}
+          onValueChange={itemValue => setSelectedCourseId(itemValue)}
+          style={styles.picker}>
+          <Picker.Item label="Select a course" value="" />
+          {courses.map(course => (
+            <Picker.Item
+              key={course._id.toString()}
+              label={course.courseName}
+              value={course._id.toString()}
+            />
+          ))}
+        </Picker>
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <Button title="Update Project" onPress={handleSubmit} />
+        <Button title="Cancel" onPress={onCancel} color="#666" />
+      </View>
     </ScrollView>
   );
 };
@@ -203,7 +397,10 @@ const detachFromRealm = <T extends object>(realmObject: T): T => {
   return JSON.parse(JSON.stringify(realmObject));
 };
 
-async function getProjectData(projectId: string | Realm.BSON.ObjectID, realm: Realm) {
+async function getProjectData(
+  projectId: string | Realm.BSON.ObjectID,
+  realm: Realm,
+) {
   try {
     projectId = new Realm.BSON.ObjectId(projectId);
     let project = await getProjectById(realm, projectId);
@@ -214,31 +411,43 @@ async function getProjectData(projectId: string | Realm.BSON.ObjectID, realm: Re
   }
 }
 
-async function handleSetProject(projectId: string, setProject: any, realm : Realm) {
-   const projectData = await getProjectData(projectId, realm);
-   const project = projectData ? projectData : null;
-   setProject(project);
+async function handleSetProject(
+  projectId: string,
+  setProject: any,
+  realm: Realm,
+) {
+  const projectData = await getProjectData(projectId, realm);
+  const project = projectData ? projectData : null;
+  setProject(project);
 }
 
-export default function ProjectPage({route} : {route : any}): React.JSX.Element {
+interface ProjectPageProps {
+  route: any;
+  navigation: NavigationProp<any>;
+}
+
+export default function ProjectPage({
+  route,
+  navigation,
+}: ProjectPageProps): React.JSX.Element {
   const realm = useRealm();
   const [showAddForm, setShowAddForm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
 
-  // projectId passing in as a prop 
+  // projectId passing in as a prop
   const [projectById, setProjectById] = useState<Project | null>(null);
 
   useEffect(() => {
-         if (route.params.projectId){
-             handleSetProject(route.params.projectId, setProjectById, realm);
-             console.log('ProjectId:', route.params.projectId);
-         }
-         return () => {
-             console.log('ProjectId cleanup');
-             setProjectById(null);
-         };
+    if (route.params.projectId) {
+      handleSetProject(route.params.projectId, setProjectById, realm);
+      console.log('ProjectId:', route.params.projectId);
+    }
+    return () => {
+      console.log('ProjectId cleanup');
+      setProjectById(null);
+    };
   }, [route.params, realm]);
 
   console.log('Project:', projectById);
@@ -250,13 +459,46 @@ export default function ProjectPage({route} : {route : any}): React.JSX.Element 
       return;
     }
 
-    const projectsResults = realm.objects('Project');
-    const coursesResults = realm.objects('Course');
+    const projectsResults = realm.objects<
+      Realm.Object & {
+        projectName: string;
+        estimatedHrs: number;
+        startDate: Date;
+        endDate: Date;
+        completed: boolean;
+        notes: string;
+        courseId?: Realm.BSON.ObjectId;
+        _id: Realm.BSON.ObjectId;
+      }
+    >('Project');
+
+    const coursesResults = realm.objects<
+      Realm.Object & {
+        courseName: string;
+        courseCode: string;
+        instructor: string;
+        color: string;
+        startDate: Date;
+        endDate: Date;
+        notes: string;
+        projectIds: Realm.BSON.ObjectId[];
+        _id: Realm.BSON.ObjectId;
+      }
+    >('Course');
 
     const updateProjects = () => {
       console.log('Projects updated');
-      const detachedProjects = Array.from(projectsResults).map((project) => {
-        const detached = detachFromRealm(project) as unknown as Project;
+      const detachedProjects = Array.from(projectsResults).map(project => {
+        const detached = detachFromRealm(project) as unknown as {
+          projectName: string;
+          estimatedHrs: number;
+          startDate: Date;
+          endDate: Date;
+          completed: boolean;
+          notes: string;
+          courseId?: Realm.BSON.ObjectId;
+          _id: Realm.BSON.ObjectId;
+        };
         return new Project(
           detached.projectName,
           detached.estimatedHrs,
@@ -267,7 +509,7 @@ export default function ProjectPage({route} : {route : any}): React.JSX.Element 
           detached.courseId
             ? new Realm.BSON.ObjectId(detached.courseId.toString())
             : undefined,
-          new Realm.BSON.ObjectId(detached._id.toString())
+          new Realm.BSON.ObjectId(detached._id.toString()),
         );
       });
       setProjects(detachedProjects);
@@ -275,18 +517,18 @@ export default function ProjectPage({route} : {route : any}): React.JSX.Element 
 
     const updateCourses = () => {
       console.log('Courses updated');
-      const detachedCourses = Array.from(coursesResults).map((course) => {
-        const detached = detachFromRealm(course) as unknown as Course;
+      const detachedCourses = Array.from(coursesResults).map(course => {
+        const detached = detachFromRealm(course);
         return new Course(
           detached.courseName,
           detached.courseCode,
           detached.instructor,
-          detached.color,
+          detached.color as CourseColors,
           new Date(detached.startDate),
           new Date(detached.endDate),
           detached.notes,
-          detached.projectIds,
-          new Realm.BSON.ObjectId(detached._id.toString())
+          detached.projectIds.map(id => new Realm.BSON.ObjectId(id.toString())),
+          new Realm.BSON.ObjectId(detached._id.toString()),
         );
       });
       setCourses(detachedCourses);
@@ -315,6 +557,24 @@ export default function ProjectPage({route} : {route : any}): React.JSX.Element 
     } catch (error) {
       console.error('Error creating project:', error);
       Alert.alert('Error', 'Failed to create project');
+    }
+  };
+
+  const handleUpdateProject = async (updatedProject: Project) => {
+    try {
+      if (projectById) {
+        await updateProject(projectById, updatedProject);
+        console.log('Project updated successfully');
+
+        // Navigate back to Home after successful update
+        navigation.navigate('Home', {
+          refresh: new Date().getTime(), // Force refresh by passing timestamp
+        });
+      }
+      setProjectById(null);
+    } catch (error) {
+      console.error('Error updating project:', error);
+      Alert.alert('Error', 'Failed to update project');
     }
   };
 
@@ -367,9 +627,16 @@ export default function ProjectPage({route} : {route : any}): React.JSX.Element 
     <View style={commonStyles.body}>
       {showAddForm ? (
         <View>
-            <AddProjectForm onSubmit={handleAddProject} />
-            <MyButton title="Cancel" onPress={() => setShowAddForm(false)} />
+          <AddProjectForm onSubmit={handleAddProject} courses={courses} />
+          <MyButton title="Cancel" onPress={() => setShowAddForm(false)} />
         </View>
+      ) : projectById ? (
+        <EditProjectForm
+          project={projectById}
+          courses={courses}
+          onSubmit={handleUpdateProject}
+          onCancel={() => setProjectById(null)}
+        />
       ) : (
         <ViewProjectsForm
           projects={projects}
@@ -476,5 +743,20 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 16,
     color: '#666',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    marginBottom: 16,
+    backgroundColor: '#fff',
+  },
+  picker: {
+    height: 50,
   },
 });
