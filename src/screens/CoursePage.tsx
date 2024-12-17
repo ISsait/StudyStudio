@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -8,15 +8,20 @@ import {
   Button,
   ScrollView,
   TouchableOpacity,
-  Platform,
   Alert,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import DatePicker from '@react-native-community/datetimepicker';
 import {commonStyles} from '../commonStyles';
-import {createCourse, deleteCourse} from '../data/storage/storageManager';
+import {
+  createCourse,
+  deleteCourse,
+  getCourses,
+} from '../data/storage/storageManager';
 import {Course, CourseColors} from '../utility';
 import Realm from 'realm';
+import {useRealm} from '../realmContextProvider';
+import {NavigationProp} from '@react-navigation/native';
 
 const AddCourseForm = ({onSubmit}: {onSubmit: (course: Course) => void}) => {
   const [courseName, setCourseName] = useState('');
@@ -28,6 +33,7 @@ const AddCourseForm = ({onSubmit}: {onSubmit: (course: Course) => void}) => {
   const [notes, setNotes] = useState('');
   const [showStartDate, setShowStartDate] = useState(false);
   const [showEndDate, setShowEndDate] = useState(false);
+  const [selectedColor, setSelectedColor] = useState(CourseColors.blue);
   const [errors, setErrors] = useState({
     courseName: false,
     courseCode: false,
@@ -54,7 +60,7 @@ const AddCourseForm = ({onSubmit}: {onSubmit: (course: Course) => void}) => {
         courseName,
         courseCode,
         instructor,
-        CourseColors.blue,
+        selectedColor,
         startDate,
         endDate,
         notes,
@@ -132,7 +138,7 @@ const AddCourseForm = ({onSubmit}: {onSubmit: (course: Course) => void}) => {
         <DatePicker
           value={startDate}
           onChange={(event, date) => {
-            setShowStartDate(Platform.OS === 'android');
+            setShowStartDate(false); // Always close on Android
             if (date) {
               setStartDate(date);
             }
@@ -151,7 +157,7 @@ const AddCourseForm = ({onSubmit}: {onSubmit: (course: Course) => void}) => {
         <DatePicker
           value={endDate}
           onChange={(event, date) => {
-            setShowEndDate(Platform.OS === 'android');
+            setShowEndDate(false); // Always close on Android
             if (date) {
               setEndDate(date);
             }
@@ -174,6 +180,22 @@ const AddCourseForm = ({onSubmit}: {onSubmit: (course: Course) => void}) => {
       />
       {errors.notes && <Text style={styles.errorText}>Notes are required</Text>}
 
+      <Text style={styles.label}>Course Color</Text>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={selectedColor}
+          onValueChange={itemValue => setSelectedColor(itemValue)}
+          style={styles.picker}>
+          {Object.entries(CourseColors).map(([key, value]) => (
+            <Picker.Item
+              key={key}
+              label={key.charAt(0).toUpperCase() + key.slice(1)}
+              value={value}
+            />
+          ))}
+        </Picker>
+      </View>
+
       <Button title="Add Course" onPress={handleSubmit} />
     </ScrollView>
   );
@@ -183,36 +205,27 @@ const ViewCoursesForm = ({
   courses,
   onAddClick,
   onDeleteCourse,
+  isDeleting,
 }: {
   courses: Course[];
   onAddClick: () => void;
   onDeleteCourse: (course: Course) => void;
+  isDeleting: boolean;
 }) => {
   const renderCourseItem = ({item}: {item: Course}) => (
     <View style={[styles.courseCard, {backgroundColor: item.color}]}>
       <View style={styles.courseInfo}>
         <Text style={styles.courseName}>{item.courseName}</Text>
         <Text style={styles.courseDetails}>{item.courseCode}</Text>
-        <Text style={styles.courseDetails}>{item.instructor}</Text>
         <Text style={styles.notes}>{item.notes}</Text>
       </View>
       <TouchableOpacity
         style={styles.deleteButton}
-        onPress={() => {
-          Alert.alert(
-            'Delete Course',
-            `Are you sure you want to delete ${item.courseName}?`,
-            [
-              {text: 'Cancel', style: 'cancel'},
-              {
-                text: 'Delete',
-                onPress: () => onDeleteCourse(item),
-                style: 'destructive',
-              },
-            ],
-          );
-        }}>
-        <Text style={styles.deleteButtonText}>Delete</Text>
+        disabled={isDeleting}
+        onPress={() => onDeleteCourse(item)}>
+        <Text style={styles.deleteButtonText}>
+          {isDeleting ? 'Deleting...' : 'Delete'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -234,28 +247,159 @@ const ViewCoursesForm = ({
   );
 };
 
-export default function CoursePage({route}: any): React.JSX.Element {
-  const {courses = [], refreshData = () => {}} = route?.params || {};
+export default function CoursePage({
+  navigation,
+}: {
+  route: any;
+  navigation: NavigationProp<any>;
+}): React.JSX.Element {
+  const realm = useRealm();
   const [showAddForm, setShowAddForm] = useState(false);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    if (!realm || realm.isClosed) {
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        const coursesResults = await getCourses(realm);
+
+        if (coursesResults) {
+          const detachedCourses = Array.from(coursesResults).map(course => {
+            const detached = detachFromRealm(course) as unknown as Course;
+            return new Course(
+              detached.courseName,
+              detached.courseCode,
+              detached.instructor,
+              detached.color,
+              new Date(detached.startDate),
+              new Date(detached.endDate),
+              detached.notes,
+              detached.projectIds,
+              detached._id,
+            );
+          });
+          setCourses(detachedCourses);
+        }
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      }
+    };
+
+    fetchData();
+  }, [realm]);
 
   const handleAddCourse = async (course: Course) => {
     try {
-      await createCourse(course);
+      await createCourse(course, realm);
+
+      // Update local state optimistically
+      setCourses(prevCourses => [...prevCourses, course]);
+
       setShowAddForm(false);
-      refreshData();
+
+      // Navigate to refresh state
+      navigation.navigate('Home', {
+        refresh: Date.now(),
+      });
     } catch (error) {
       console.error('Error creating course:', error);
       Alert.alert('Error', 'Failed to create course');
+
+      // Revert on error
+      const coursesResults = await getCourses(realm);
+      if (coursesResults) {
+        const detachedCourses = Array.from(coursesResults).map(course => {
+          const detached = detachFromRealm(course) as unknown as Course;
+          return new Course(
+            detached.courseName,
+            detached.courseCode,
+            detached.instructor,
+            detached.color,
+            new Date(detached.startDate),
+            new Date(detached.endDate),
+            detached.notes,
+            detached.projectIds,
+            detached._id,
+          );
+        });
+        setCourses(detachedCourses);
+      }
     }
   };
 
   const handleDeleteCourse = async (course: Course) => {
+    setIsDeleting(true);
     try {
-      await deleteCourse(course);
-      refreshData();
+      console.log('Course to delete:', {
+        id: course._id.toString(),
+        name: course.courseName,
+      });
+
+      const objectId =
+        typeof course._id === 'string'
+          ? new Realm.BSON.ObjectId(course._id)
+          : course._id instanceof Realm.BSON.ObjectId
+          ? course._id
+          : (() => {
+              console.error('Invalid _id type:', typeof course._id);
+              throw new Error('Invalid course ID format');
+            })();
+
+      const courseToDelete = new Course(
+        course.courseName,
+        course.courseCode,
+        course.instructor,
+        course.color,
+        course.startDate,
+        course.endDate,
+        course.notes,
+        course.projectIds,
+        objectId,
+      );
+
+      // Update local state optimistically
+      setCourses(prevCourses =>
+        prevCourses.filter((c: Course) =>
+          c._id instanceof Realm.BSON.ObjectId
+            ? c._id.toString() !== course._id.toString()
+            : c._id !== course._id,
+        ),
+      );
+
+      await deleteCourse(courseToDelete);
+      console.log('Course deleted successfully');
+
+      navigation.navigate('Home', {
+        refresh: Date.now(),
+      });
     } catch (error) {
       console.error('Error deleting course:', error);
       Alert.alert('Error', 'Failed to delete course');
+      // Revert on error
+      const coursesResults = await getCourses(realm);
+      if (coursesResults) {
+        const detachedCourses = Array.from(coursesResults).map(course => {
+          const detached = detachFromRealm(course) as unknown as Course;
+          return new Course(
+            detached.courseName,
+            detached.courseCode,
+            detached.instructor,
+            detached.color,
+            new Date(detached.startDate),
+            new Date(detached.endDate),
+            detached.notes,
+            detached.projectIds,
+            detached._id,
+          );
+        });
+        setCourses(detachedCourses);
+      }
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -268,11 +412,17 @@ export default function CoursePage({route}: any): React.JSX.Element {
           courses={courses}
           onAddClick={() => setShowAddForm(true)}
           onDeleteCourse={handleDeleteCourse}
+          isDeleting={isDeleting}
         />
       )}
     </View>
   );
 }
+
+// Add helper function
+const detachFromRealm = <T extends object>(realmObject: T): T => {
+  return JSON.parse(JSON.stringify(realmObject));
+};
 
 const styles = StyleSheet.create({
   formContainer: {
@@ -311,6 +461,7 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderRadius: 4,
     marginBottom: 16,
+    backgroundColor: '#fff',
   },
   picker: {
     height: 50,
