@@ -20,18 +20,23 @@ import {
 } from '../data/storage/storageManager';
 import {Course, CourseColors, Project} from '../utility';
 import Realm from 'realm';
-import MyButton from '../components/commonComponents/MyButton';
 import {useRealm} from '../realmContextProvider';
 import {Picker} from '@react-native-picker/picker';
 import {NavigationProp} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const AddProjectForm = ({
   onSubmit,
   courses,
+  showAddForm,
+  setShowAddForm,
 }: {
   onSubmit: (project: Project) => void;
   courses: Course[];
+  showAddForm: boolean;
+  setShowAddForm: (showAddForm: boolean) => void;
 }) => {
+  const navigation = useNavigation();
   const [selectedCourseId, setSelectedCourseId] = useState<string>('');
   const [projectName, setProjectName] = useState('');
   const [estimatedHrs, setEstimatedHrs] = useState('');
@@ -45,6 +50,18 @@ const AddProjectForm = ({
     estimatedHrs: false,
     notes: false,
   });
+
+  useEffect(() => {
+    // Conditionally update the header title
+    navigation.setOptions({
+      title: showAddForm ? 'Add Project' : 'View Project',
+    });
+    return () => {
+      navigation.setOptions({
+        title: 'View Project',
+      });
+    }
+  }, [navigation, showAddForm]);
 
   const validateForm = () => {
     const newErrors = {
@@ -81,30 +98,25 @@ const AddProjectForm = ({
 
   return (
     <ScrollView style={styles.formContainer}>
-      <Text style={styles.formTitle}>Add Project</Text>
 
       <Text style={styles.label}>Project Name *</Text>
       <TextInput
         style={[styles.input, errors.projectName && styles.inputError]}
         value={projectName}
         onChangeText={setProjectName}
-        placeholder="Project Name"
+        placeholder={errors.projectName ? 'Project name is required' : 'Project Name'} // Dynamic placeholder
+        placeholderTextColor={errors.projectName ? 'red' : 'gray'} // Set placeholder color to red if there's an error
       />
-      {errors.projectName && (
-        <Text style={styles.errorText}>Project name is required</Text>
-      )}
 
       <Text style={styles.label}>Estimated Hours *</Text>
       <TextInput
         style={[styles.input, errors.estimatedHrs && styles.inputError]}
         value={estimatedHrs}
         onChangeText={setEstimatedHrs}
-        placeholder="Estimated Hours"
+        placeholder={errors.estimatedHrs ? 'Valid number of hours required' : 'Estimated Hours'} // Dynamic placeholder
+        placeholderTextColor={errors.estimatedHrs ? 'red' : 'gray'} // Set placeholder color to red if there's an error
         keyboardType="numeric"
       />
-      {errors.estimatedHrs && (
-        <Text style={styles.errorText}>Valid number of hours required</Text>
-      )}
 
       <Text style={styles.label}>Start Date</Text>
       <TouchableOpacity
@@ -153,10 +165,10 @@ const AddProjectForm = ({
         ]}
         value={notes}
         onChangeText={setNotes}
-        placeholder="Notes"
+        placeholder={errors.notes ? 'Notes are required' : 'Notes'} // Dynamic placeholder
+        placeholderTextColor={errors.notes ? 'red' : 'gray'} // Set placeholder color to red if there's an
         multiline
       />
-      {errors.notes && <Text style={styles.errorText}>Notes are required</Text>}
 
       <Text style={styles.label}>Course</Text>
       <View style={styles.pickerContainer}>
@@ -174,8 +186,10 @@ const AddProjectForm = ({
           ))}
         </Picker>
       </View>
-
-      <Button title="Add Project" onPress={handleSubmit} />
+      <View style={styles.buttonContainer}>
+        <Button title="Add Project" onPress={handleSubmit} />
+        <Button title="Cancel" onPress={() => setShowAddForm(false)} color = "#666"/>
+      </View>
     </ScrollView>
   );
 };
@@ -191,6 +205,7 @@ const EditProjectForm = ({
   onCancel: () => void;
   courses: Course[];
 }) => {
+  const navigation = useNavigation();
   const [selectedCourseId, setSelectedCourseId] = useState<string>(
     project.courseId?.toString() || '',
   );
@@ -208,6 +223,18 @@ const EditProjectForm = ({
     estimatedHrs: false,
     notes: false,
   });
+
+  useEffect(() => {
+    // Conditionally update the header title
+    navigation.setOptions({
+      title: project ? 'Edit Project' : 'View Project',
+    });
+    return () => {
+      navigation.setOptions({
+        title: 'View Project',
+      });
+    }
+  }, [navigation, project]);
 
   const validateForm = () => {
     const newErrors = {
@@ -239,30 +266,25 @@ const EditProjectForm = ({
 
   return (
     <ScrollView style={styles.formContainer}>
-      <Text style={styles.formTitle}>Edit Project</Text>
 
       <Text style={styles.label}>Project Name *</Text>
       <TextInput
         style={[styles.input, errors.projectName && styles.inputError]}
         value={projectName}
         onChangeText={setProjectName}
-        placeholder="Project Name"
+        placeholder={errors.projectName ? 'Project name is required' : 'Project Name'} // Dynamic placeholder
+        placeholderTextColor={errors.projectName ? 'red' : 'gray'} // Set placeholder color to red if there's an error
       />
-      {errors.projectName && (
-        <Text style={styles.errorText}>Project name is required</Text>
-      )}
 
       <Text style={styles.label}>Estimated Hours *</Text>
       <TextInput
         style={[styles.input, errors.estimatedHrs && styles.inputError]}
         value={estimatedHrs}
         onChangeText={setEstimatedHrs}
-        placeholder="Estimated Hours"
+        placeholder={errors.estimatedHrs ? 'Valid number of hours required' : 'Estimated Hours'} // Dynamic placeholder
+        placeholderTextColor={errors.estimatedHrs ? 'red' : 'gray'} // Set placeholder color to red if there's an error
         keyboardType="numeric"
       />
-      {errors.estimatedHrs && (
-        <Text style={styles.errorText}>Valid number of hours required</Text>
-      )}
 
       <Text style={styles.label}>Start Date</Text>
       <TouchableOpacity
@@ -311,10 +333,10 @@ const EditProjectForm = ({
         ]}
         value={notes}
         onChangeText={setNotes}
-        placeholder="Notes"
+        placeholder={errors.notes ? 'Notes are required' : 'Notes'} // Dynamic placeholder
+        placeholderTextColor={errors.notes ? 'red' : 'gray'} // Set placeholder color to red if there's an
         multiline
       />
-      {errors.notes && <Text style={styles.errorText}>Notes are required</Text>}
 
       <Text style={styles.label}>Course</Text>
       <View style={styles.pickerContainer}>
@@ -646,8 +668,7 @@ useEffect(() => {
     <View style={commonStyles.body}>
       {showAddForm ? (
         <View>
-          <AddProjectForm onSubmit={handleAddProject} courses={courses} />
-          <MyButton title="Cancel" onPress={() => setShowAddForm(false)} />
+          <AddProjectForm onSubmit={handleAddProject} courses={courses} showAddForm = {showAddForm} setShowAddForm = {setShowAddForm}/>
         </View>
       ) : projectById ? (
         <EditProjectForm
@@ -672,20 +693,15 @@ const styles = StyleSheet.create({
   formContainer: {
     padding: 16,
   },
-  formTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
   label: {
     fontSize: 16,
-    marginBottom: 8,
+    marginBottom: 4,
   },
   input: {
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 4,
-    padding: 8,
+    padding: 6,
     marginBottom: 16,
   },
   inputError: {
