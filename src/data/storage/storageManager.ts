@@ -118,8 +118,9 @@ export async function deleteProject(project: Project, realm : Realm) {
   }
 }
 
-export async function updateCourse(course: Course, newCourse: Course) {
-  const realm = await getRealm();
+export async function updateCourse(course: Course, newCourse: Course, realm : Realm) {
+  // console.log('Updating old course:', course);
+  // console.log('With new course:', newCourse);
   try {
     realm.write(() => {
       course.courseName = newCourse.courseName;
@@ -133,11 +134,7 @@ export async function updateCourse(course: Course, newCourse: Course) {
     });
   } catch (error) {
     console.error('Error updating course: ', error);
-  } finally {
-      if (!realm.isClosed) {
-          realm.close();
-        }
-    }
+  }
 }
 
 export async function updateProject(project: Project, newProject: Project, realm : Realm) {

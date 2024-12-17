@@ -518,7 +518,9 @@ export default function CoursePage({
   };
 
   function handleEditCourse(course : Course) {
-
+    const courseById = courses.find(c => c._id === courseId) as Course;
+    updateCourse(courseById, course, realm);
+    setShowEditForm(false);
   }
 
   return (

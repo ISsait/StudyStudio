@@ -112,7 +112,7 @@ export default function EditCourseForm ({
         endDate,
         notes,
         [],
-        new Realm.BSON.ObjectId(),
+        // new Realm.BSON.ObjectId(),
       );
       onSubmit(newCourse);
       // Reset form
