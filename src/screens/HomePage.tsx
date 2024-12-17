@@ -90,10 +90,18 @@ export default function HomePage(): React.JSX.Element {
       return map;
     }, {} as Record<string, string>);
 
+    const currentDate = new Date();
+
     return projects.reduce((acc, project) => {
       const { endDate, projectName, courseId } = project;
       const dateKey = endDate.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
-      const color = courseColorMap[courseId?.toString() || ''];
+      const courseColor = courseColorMap[courseId?.toString() || ''];
+
+      // Check if the due date has passed
+      const isPastDue = endDate < currentDate;
+
+      // If it's past due, set the color to dark red; otherwise, use the course color
+      const color = isPastDue ? 'darkred' : courseColor;
 
       if (!acc[dateKey]) {
         acc[dateKey] = [];
