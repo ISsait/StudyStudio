@@ -15,6 +15,7 @@ import DatePicker from '@react-native-community/datetimepicker';
 import {commonStyles} from '../commonStyles';
 import {
   createCourse,
+  updateCourse,
   deleteCourse,
   getCourses,
 } from '../data/storage/storageManager';
@@ -25,6 +26,7 @@ import {
   NavigationProp,
   useNavigation,
 } from '@react-navigation/native';
+import EditCourseForm from '../components/CoursePageComponents/EditCourseForm';
 
 
 const AddCourseForm = ({
@@ -242,14 +244,25 @@ const ViewCoursesForm = ({
   onAddClick,
   onDeleteCourse,
   isDeleting,
+  setShowEditForm,
+  setCourseId,
 }: {
   courses: Course[];
   onAddClick: () => void;
   onDeleteCourse: (course: Course) => void;
   isDeleting: boolean;
+  setShowEditForm: (showEditForm: boolean) => void;
+  setCourseId: (courseId: Realm.BSON.ObjectId) => void;
 }) => {
+  let courseId = new Realm.BSON.ObjectId();
   const renderCourseItem = ({item}: {item: Course}) => (
-    <View style={[styles.courseCard, {backgroundColor: item.color}]}>
+    <TouchableOpacity
+      style={[styles.courseCard, {backgroundColor: item.color}]}
+      onPress={() => {
+        setShowEditForm(true);
+        courseId = item._id;
+        setCourseId(courseId);
+      }}>
       <View style={styles.courseInfo}>
         <Text style={styles.courseName}>{item.courseName}</Text>
         <Text style={styles.courseDetails}>{item.courseCode}</Text>
@@ -263,7 +276,7 @@ const ViewCoursesForm = ({
           {isDeleting ? 'Deleting...' : 'Delete'}
         </Text>
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -291,9 +304,11 @@ export default function CoursePage({
 }): React.JSX.Element {
   const realm = useRealm();
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [courseId, setCourseId] = useState<Realm.BSON.ObjectId>(() => new Realm.BSON.ObjectId());
 
   useEffect(() => {
       if (!realm || realm.isClosed) {
@@ -502,6 +517,10 @@ export default function CoursePage({
     }
   };
 
+  function handleEditCourse(course : Course) {
+
+  }
+
   return (
     <View style={commonStyles.body}>
       {showAddForm ? (
@@ -511,12 +530,21 @@ export default function CoursePage({
           showAddForm={showAddForm}
           setShowAddForm={setShowAddForm}
       />
+      ) : showEditForm ? (
+        <EditCourseForm
+          onSubmit={handleEditCourse}
+          courseId={courseId}
+          showEditForm={showEditForm}
+          setShowEditForm={setShowEditForm}
+        />
       ) : (
         <ViewCoursesForm
           courses={courses}
           onAddClick={() => setShowAddForm(true)}
           onDeleteCourse={handleDeleteCourse}
           isDeleting={isDeleting}
+          setShowEditForm={setShowEditForm}
+          setCourseId={setCourseId}
         />
       )}
     </View>
