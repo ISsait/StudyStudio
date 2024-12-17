@@ -668,7 +668,12 @@ useEffect(() => {
     <View style={commonStyles.body}>
       {showAddForm ? (
         <View>
-          <AddProjectForm onSubmit={handleAddProject} courses={courses} showAddForm = {showAddForm} setShowAddForm = {setShowAddForm}/>
+          <AddProjectForm
+            onSubmit={handleAddProject}
+            courses={courses}
+            showAddForm={showAddForm}
+            setShowAddForm={setShowAddForm}
+          />
         </View>
       ) : projectById ? (
         <EditProjectForm

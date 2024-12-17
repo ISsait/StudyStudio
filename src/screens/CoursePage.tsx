@@ -21,9 +21,24 @@ import {
 import {Course, CourseColors} from '../utility';
 import Realm from 'realm';
 import {useRealm} from '../realmContextProvider';
-import {NavigationProp} from '@react-navigation/native';
+import {
+  NavigationProp,
+  useNavigation,
+} from '@react-navigation/native';
 
-const AddCourseForm = ({onSubmit}: {onSubmit: (course: Course) => void}) => {
+
+const AddCourseForm = ({
+  onSubmit,
+  courses,
+  showAddForm,
+  setShowAddForm,
+}: {
+  onSubmit: (course: Course) => void,
+  courses: Course[],
+  showAddForm: boolean,
+  setShowAddForm: (showAddForm: boolean) => void,
+}) => {
+  const navigation = useNavigation();
   const [courseName, setCourseName] = useState('');
   const [courseCode, setCourseCode] = useState('');
   const [instructor, setInstructor] = useState('');
@@ -40,6 +55,18 @@ const AddCourseForm = ({onSubmit}: {onSubmit: (course: Course) => void}) => {
     instructor: false,
     notes: false,
   });
+
+    useEffect(() => {
+      // Conditionally update the header title
+      navigation.setOptions({
+        title: showAddForm ? 'Add Course' : 'View Course',
+      });
+      return () => {
+        navigation.setOptions({
+          title: 'View Course',
+        });
+      };
+    }, [navigation, showAddForm]);
 
   const semesters = ['Fall', 'Winter', 'Spring', 'Summer'];
 
@@ -81,7 +108,6 @@ const AddCourseForm = ({onSubmit}: {onSubmit: (course: Course) => void}) => {
 
   return (
     <ScrollView style={styles.formContainer}>
-      <Text style={styles.formTitle}>Add Course</Text>
 
       <Text style={styles.label}>Course Name *</Text>
       <TextInput
@@ -116,55 +142,84 @@ const AddCourseForm = ({onSubmit}: {onSubmit: (course: Course) => void}) => {
         <Text style={styles.errorText}>Instructor name is required</Text>
       )}
 
-      <Text style={styles.label}>Semester</Text>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={semester}
-          onValueChange={itemValue => setSemester(itemValue)}
-          style={styles.picker}>
-          {semesters.map(sem => (
-            <Picker.Item key={sem} label={sem} value={sem} />
-          ))}
-        </Picker>
+      <View style={styles.dateContainer}>
+        <View>
+          <Text style={styles.label}>Semester</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={semester}
+              onValueChange={itemValue => setSemester(itemValue)}
+              style={styles.picker}>
+              {semesters.map(sem => (
+                <Picker.Item key={sem} label={sem} value={sem} />
+              ))}
+            </Picker>
+          </View>
+        </View>
+
+
+        <View>
+          <Text style={styles.label}>Course Color</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedColor}
+              onValueChange={itemValue => setSelectedColor(itemValue)}
+              style={styles.picker}>
+              {Object.entries(CourseColors).map(([key, value]) => (
+                <Picker.Item
+                  key={key}
+                  label={key.charAt(0).toUpperCase() + key.slice(1)}
+                  value={value}
+                />
+              ))}
+            </Picker>
+          </View>
+        </View>
       </View>
 
-      <Text style={styles.label}>Start Date</Text>
-      <TouchableOpacity
-        style={styles.dateButton}
-        onPress={() => setShowStartDate(true)}>
-        <Text>{startDate.toLocaleDateString()}</Text>
-      </TouchableOpacity>
-      {showStartDate && (
-        <DatePicker
-          value={startDate}
-          onChange={(event, date) => {
-            setShowStartDate(false); // Always close on Android
-            if (date) {
-              setStartDate(date);
-            }
-          }}
-          mode="date"
-        />
-      )}
+      <View style={styles.dateContainer}>
+        <View>
+          <Text style={styles.label}>Start Date</Text>
+          <TouchableOpacity
+            style={styles.dateButton}
+            onPress={() => setShowStartDate(true)}>
+            <Text>{startDate.toLocaleDateString()}</Text>
+          </TouchableOpacity>
+          {showStartDate && (
+            <DatePicker
+              value={startDate}
+              onChange={(event, date) => {
+                setShowStartDate(false); // Always close on Android
+                if (date) {
+                  setStartDate(date);
+                }
+              }}
+              mode="date"
+            />
+          )}
+        </View>
 
-      <Text style={styles.label}>End Date</Text>
-      <TouchableOpacity
-        style={styles.dateButton}
-        onPress={() => setShowEndDate(true)}>
-        <Text>{endDate.toLocaleDateString()}</Text>
-      </TouchableOpacity>
-      {showEndDate && (
-        <DatePicker
-          value={endDate}
-          onChange={(event, date) => {
-            setShowEndDate(false); // Always close on Android
-            if (date) {
-              setEndDate(date);
-            }
-          }}
-          mode="date"
-        />
-      )}
+        <View>
+          <Text style={styles.label}>End Date</Text>
+          <TouchableOpacity
+            style={styles.dateButton}
+            onPress={() => setShowEndDate(true)}>
+            <Text>{endDate.toLocaleDateString()}</Text>
+          </TouchableOpacity>
+          {showEndDate && (
+            <DatePicker
+              value={endDate}
+              onChange={(event, date) => {
+                setShowEndDate(false); // Always close on Android
+                if (date) {
+                  setEndDate(date);
+                }
+              }}
+              mode="date"
+            />
+          )}
+        </View>
+      </View>
 
       <Text style={styles.label}>Notes *</Text>
       <TextInput
@@ -180,23 +235,10 @@ const AddCourseForm = ({onSubmit}: {onSubmit: (course: Course) => void}) => {
       />
       {errors.notes && <Text style={styles.errorText}>Notes are required</Text>}
 
-      <Text style={styles.label}>Course Color</Text>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={selectedColor}
-          onValueChange={itemValue => setSelectedColor(itemValue)}
-          style={styles.picker}>
-          {Object.entries(CourseColors).map(([key, value]) => (
-            <Picker.Item
-              key={key}
-              label={key.charAt(0).toUpperCase() + key.slice(1)}
-              value={value}
-            />
-          ))}
-        </Picker>
-      </View>
-
-      <Button title="Add Course" onPress={handleSubmit} />
+      <View style={styles.buttonContainer}>
+              <Button title="Add Project" onPress={handleSubmit} />
+              <Button title="Cancel" onPress={() => setShowAddForm(false)} color = "#666"/>
+            </View>
     </ScrollView>
   );
 };
@@ -312,8 +354,8 @@ export default function CoursePage({
       // Revert on error
       const coursesResults = await getCourses(realm);
       if (coursesResults) {
-        const detachedCourses = Array.from(coursesResults).map(course => {
-          const detached = detachFromRealm(course) as unknown as Course;
+        const detachedCourses = Array.from(coursesResults).map(eachCourse => {
+          const detached = detachFromRealm(eachCourse) as unknown as Course;
           return new Course(
             detached.courseName,
             detached.courseCode,
@@ -382,8 +424,8 @@ export default function CoursePage({
       // Revert on error
       const coursesResults = await getCourses(realm);
       if (coursesResults) {
-        const detachedCourses = Array.from(coursesResults).map(course => {
-          const detached = detachFromRealm(course) as unknown as Course;
+        const detachedCourses = Array.from(coursesResults).map(eachCourse => {
+          const detached = detachFromRealm(eachCourse) as unknown as Course;
           return new Course(
             detached.courseName,
             detached.courseCode,
@@ -406,7 +448,12 @@ export default function CoursePage({
   return (
     <View style={commonStyles.body}>
       {showAddForm ? (
-        <AddCourseForm onSubmit={handleAddCourse} />
+        <AddCourseForm
+          onSubmit={handleAddCourse}
+          courses={courses}
+          showAddForm={showAddForm}
+          setShowAddForm={setShowAddForm}
+      />
       ) : (
         <ViewCoursesForm
           courses={courses}
@@ -428,14 +475,9 @@ const styles = StyleSheet.create({
   formContainer: {
     padding: 16,
   },
-  formTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
   label: {
     fontSize: 16,
-    marginBottom: 8,
+    marginBottom: 4,
   },
   input: {
     borderWidth: 1,
@@ -465,6 +507,8 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
+    padding: 25,
+    width: 150,
   },
   dateButton: {
     borderWidth: 1,
@@ -472,6 +516,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 12,
     marginBottom: 16,
+    paddingHorizontal: 24,
+    width: 150,
   },
   courseCard: {
     flexDirection: 'row',
@@ -527,5 +573,16 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 16,
     color: '#666',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingLeft: 16,
+    paddingRight: 16,
   },
 });
