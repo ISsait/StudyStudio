@@ -15,3 +15,6 @@ This app should be able to be started after just running npm i, and npm run andr
 7- npm i @react-native-community/datetimepicker
 
 8- npm i react-native-safe-area-context
+
+
+Please Note: code is not fully flushed out, items can break when deleting a course that still has projects attached to it.
