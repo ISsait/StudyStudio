@@ -18,3 +18,7 @@ This app should be able to be started after just running npm i, and npm run andr
 
 
 Please Note: code is not fully flushed out, items can break when deleting a course that still has projects attached to it.
+
+When running the app for the first time there are no preloaded courses or projects.
+To add a new course, go to the "Courses" tab and click the "Add Course" button.
+To add a new project, go to the "Projects" tab and click the "Add Project" button.
