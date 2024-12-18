@@ -16,6 +16,7 @@ import {commonStyles} from '../commonStyles';
 import {
   createProject,
   deleteProject,
+  getProjects,
   updateProject,
 } from '../data/storage/storageManager';
 import {Course, CourseColors, Project} from '../utility';
@@ -23,7 +24,7 @@ import Realm from 'realm';
 import {useRealm} from '../realmContextProvider';
 import {Picker} from '@react-native-picker/picker';
 import {NavigationProp} from '@react-navigation/native';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 const AddProjectForm = ({
   onSubmit,
@@ -98,13 +99,14 @@ const AddProjectForm = ({
 
   return (
     <ScrollView style={styles.formContainer}>
-
       <Text style={styles.label}>Project Name *</Text>
       <TextInput
         style={[styles.input, errors.projectName && styles.inputError]}
         value={projectName}
         onChangeText={setProjectName}
-        placeholder={errors.projectName ? 'Project name is required' : 'Project Name'} // Dynamic placeholder
+        placeholder={
+          errors.projectName ? 'Project name is required' : 'Project Name'
+        } // Dynamic placeholder
         placeholderTextColor={errors.projectName ? 'red' : 'gray'} // Set placeholder color to red if there's an error
       />
 
@@ -113,7 +115,11 @@ const AddProjectForm = ({
         style={[styles.input, errors.estimatedHrs && styles.inputError]}
         value={estimatedHrs}
         onChangeText={setEstimatedHrs}
-        placeholder={errors.estimatedHrs ? 'Valid number of hours required' : 'Estimated Hours'} // Dynamic placeholder
+        placeholder={
+          errors.estimatedHrs
+            ? 'Valid number of hours required'
+            : 'Estimated Hours'
+        } // Dynamic placeholder
         placeholderTextColor={errors.estimatedHrs ? 'red' : 'gray'} // Set placeholder color to red if there's an error
         keyboardType="numeric"
       />
@@ -188,7 +194,11 @@ const AddProjectForm = ({
       </View>
       <View style={styles.buttonContainer}>
         <Button title="Add Project" onPress={handleSubmit} />
-        <Button title="Cancel" onPress={() => setShowAddForm(false)} color = "#666"/>
+        <Button
+          title="Cancel"
+          onPress={() => setShowAddForm(false)}
+          color="#666"
+        />
       </View>
     </ScrollView>
   );
@@ -266,13 +276,14 @@ const EditProjectForm = ({
 
   return (
     <ScrollView style={styles.formContainer}>
-
       <Text style={styles.label}>Project Name *</Text>
       <TextInput
         style={[styles.input, errors.projectName && styles.inputError]}
         value={projectName}
         onChangeText={setProjectName}
-        placeholder={errors.projectName ? 'Project name is required' : 'Project Name'} // Dynamic placeholder
+        placeholder={
+          errors.projectName ? 'Project name is required' : 'Project Name'
+        } // Dynamic placeholder
         placeholderTextColor={errors.projectName ? 'red' : 'gray'} // Set placeholder color to red if there's an error
       />
 
@@ -281,7 +292,11 @@ const EditProjectForm = ({
         style={[styles.input, errors.estimatedHrs && styles.inputError]}
         value={estimatedHrs}
         onChangeText={setEstimatedHrs}
-        placeholder={errors.estimatedHrs ? 'Valid number of hours required' : 'Estimated Hours'} // Dynamic placeholder
+        placeholder={
+          errors.estimatedHrs
+            ? 'Valid number of hours required'
+            : 'Estimated Hours'
+        } // Dynamic placeholder
         placeholderTextColor={errors.estimatedHrs ? 'red' : 'gray'} // Set placeholder color to red if there's an error
         keyboardType="numeric"
       />
@@ -436,59 +451,62 @@ export default function ProjectPage({
   // projectId passing in as a prop
   const [projectById, setProjectById] = useState<Project | null>(null);
 
-useEffect(() => {
-  if (!realm || realm.isClosed) {
-    console.error('Realm not available');
-    return;
-  }
-
-  // Safely create BSON ObjectId
-  const projectIdBSON = new Realm.BSON.ObjectId(route.params.projectId);
-
-  // Fetch the project object by primary key
-  const project = realm.objectForPrimaryKey<Project>('Project', projectIdBSON);
-
-  // Update the local state with a detached project
-  const updateProjectById = () => {
-    if (project) {
-      const detachedProject = detachFromRealm(project) as Project;
-
-      const projectData = new Project(
-        detachedProject.projectName,
-        detachedProject.estimatedHrs,
-        new Date(detachedProject.startDate),
-        new Date(detachedProject.endDate),
-        detachedProject.completed,
-        detachedProject.notes,
-        detachedProject.courseId
-          ? new Realm.BSON.ObjectId(detachedProject.courseId.toString())
-          : undefined,
-        new Realm.BSON.ObjectId(detachedProject._id.toString()),
-      );
-
-      setProjectById(projectData);
-    } else {
-      setProjectById(null);
+  useEffect(() => {
+    if (!realm || realm.isClosed) {
+      console.error('Realm not available');
+      return;
     }
-  };
 
-  // Update state immediately
-  updateProjectById();
+    // Safely create BSON ObjectId
+    const projectIdBSON = new Realm.BSON.ObjectId(route.params.projectId);
 
-  // Set up listener for updates to the project
-  const listener = () => {
+    // Fetch the project object by primary key
+    const project = realm.objectForPrimaryKey<Project>(
+      'Project',
+      projectIdBSON,
+    );
+
+    // Update the local state with a detached project
+    const updateProjectById = () => {
+      if (project) {
+        const detachedProject = detachFromRealm(project) as Project;
+
+        const projectData = new Project(
+          detachedProject.projectName,
+          detachedProject.estimatedHrs,
+          new Date(detachedProject.startDate),
+          new Date(detachedProject.endDate),
+          detachedProject.completed,
+          detachedProject.notes,
+          detachedProject.courseId
+            ? new Realm.BSON.ObjectId(detachedProject.courseId.toString())
+            : undefined,
+          new Realm.BSON.ObjectId(detachedProject._id.toString()),
+        );
+
+        setProjectById(projectData);
+      } else {
+        setProjectById(null);
+      }
+    };
+
+    // Update state immediately
     updateProjectById();
-  };
-  project?.addListener(listener);
 
-  // Cleanup function
-  return () => {
-    console.log('ProjectId cleanup');
-    project?.removeListener(listener); // Properly remove listener
-    route.params.projectId = null; // Reset projectId in route params
-    setProjectById(null);
-  };
-}, [route.params, realm]);
+    // Set up listener for updates to the project
+    const listener = () => {
+      updateProjectById();
+    };
+    project?.addListener(listener);
+
+    // Cleanup function
+    return () => {
+      console.log('ProjectId cleanup');
+      project?.removeListener(listener); // Properly remove listener
+      route.params.projectId = null; // Reset projectId in route params
+      setProjectById(null);
+    };
+  }, [route.params, realm]);
 
   // Fetch projects and courses from Realm and listen for changes
   useEffect(() => {
@@ -600,19 +618,52 @@ useEffect(() => {
 
   const handleUpdateProject = async (updatedProject: Project) => {
     try {
-      if (projectById) {
-        await updateProject(projectById, updatedProject, realm);
-        console.log('Project updated successfully');
-
-        // Navigate back to Home after successful update
-        navigation.navigate('Home', {
-          refresh: new Date().getTime(), // Force refresh by passing timestamp
-        });
+      const originalProject = realm.objectForPrimaryKey<Project>(
+        'Project',
+        updatedProject._id,
+      );
+      if (!originalProject) {
+        throw new Error('Project not found');
       }
+      await updateProject(originalProject, updatedProject, realm);
+
+      // Update local state optimistically
+      setProjects(prevProjects =>
+        prevProjects.map(p =>
+          p._id.toString() === updatedProject._id.toString()
+            ? updatedProject
+            : p,
+        ),
+      );
+
       setProjectById(null);
+
+      // Navigate with refresh trigger
+      navigation.navigate('Home', {
+        refresh: Date.now(),
+      });
     } catch (error) {
       console.error('Error updating project:', error);
       Alert.alert('Error', 'Failed to update project');
+
+      // Revert on error
+      const projectsResults = await getProjects(realm);
+      if (projectsResults) {
+        const detachedProjects = Array.from(projectsResults).map(project => {
+          const detached = detachFromRealm(project) as unknown as Project;
+          return new Project(
+            detached.projectName,
+            detached.estimatedHrs,
+            new Date(detached.startDate),
+            new Date(detached.endDate),
+            detached.completed,
+            detached.notes,
+            detached.courseId ?? undefined,
+            detached._id,
+          );
+        });
+        setProjects(detachedProjects);
+      }
     }
   };
 
